@@ -5,6 +5,7 @@ waldiez_out/
 documents/
 # do not ignore these extensions
 !.gitignore
+!README.md
 !*.waldiez
 !*.waldiezModel
 !*.waldiezSkill
