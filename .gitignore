@@ -8,6 +8,7 @@ documents/
 !.gitignore
 !README.md
 !LICENSE
+!NOTICE.md
 !CODEOWNERS
 !*.waldiez
 !*.waldiezModel
