@@ -1,1 +1,566 @@
-
+{
+  "id": "id-d32a381c-bfb5-4849-8f60-29c6f494cc80",
+  "type": "flow",
+  "storageId": "wf-1747145098669Z_7figthXUt6Im4Zj3TaQ}",
+  "name": "innovator",
+  "description": "A waldiez flow that provides innovative ideas based on recent arxiv papers.",
+  "tags": [],
+  "requirements": [],
+  "createdAt": "2025-05-13T14:04:58.669Z",
+  "updatedAt": "2025-05-13T15:14:08.289Z",
+  "data": {
+    "nodes": [
+      {
+        "id": "ws-1747147290306EwQ97YnLGFhYwfXsdENxm",
+        "type": "model",
+        "position": {
+          "x": 0,
+          "y": 10
+        },
+        "measured": {
+          "width": 182,
+          "height": 182
+        },
+        "selected": false,
+        "hidden": true
+      },
+      {
+        "id": "wa-1747147320991PdqWGNJ1ghErYMoxV1FJO",
+        "type": "agent",
+        "position": {
+          "x": 135,
+          "y": 90
+        },
+        "measured": {
+          "width": 206,
+          "height": 216
+        },
+        "selected": false,
+        "dragging": false,
+        "hidden": false
+      },
+      {
+        "id": "wa-1747147323059iAJ-kmksXTkdJHMe8ixtc",
+        "type": "agent",
+        "position": {
+          "x": 525,
+          "y": 60
+        },
+        "measured": {
+          "width": 8,
+          "height": 16
+        },
+        "selected": false,
+        "dragging": false,
+        "hidden": false
+      },
+      {
+        "id": "1747147450805z64e_Ozvf3F67CywB-aX5",
+        "type": "agent",
+        "position": {
+          "x": 555,
+          "y": 330
+        },
+        "measured": {
+          "width": 8,
+          "height": 16
+        },
+        "selected": false,
+        "dragging": false,
+        "hidden": false
+      },
+      {
+        "id": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+        "type": "agent",
+        "position": {
+          "x": 555,
+          "y": 45
+        },
+        "measured": {
+          "width": 206,
+          "height": 254
+        },
+        "selected": false,
+        "dragging": false,
+        "hidden": false
+      },
+      {
+        "id": "wa-17471476969197JhmOxwi1fGE69zWdgiki",
+        "type": "agent",
+        "position": {
+          "x": 585,
+          "y": 45
+        },
+        "measured": {
+          "width": 8,
+          "height": 16
+        },
+        "selected": false,
+        "hidden": false
+      },
+      {
+        "id": "ws-174714788834484P_xLCpPJavk58zgEhaH",
+        "type": "model",
+        "position": {
+          "x": 240,
+          "y": 10
+        },
+        "measured": {
+          "width": 182,
+          "height": 182
+        },
+        "selected": false,
+        "hidden": true
+      }
+    ],
+    "edges": [
+      {
+        "id": "we-1747147732530Sc8cqbQsDyeP1PM1ZiVki",
+        "source": "wa-1747147320991PdqWGNJ1ghErYMoxV1FJO",
+        "target": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+        "hidden": false,
+        "type": "chat",
+        "animated": false,
+        "selected": false,
+        "markerEnd": {
+          "type": "arrowclosed",
+          "color": "#bc76f5",
+          "width": 10,
+          "height": 10
+        },
+        "style": {
+          "stroke": "#bc76f5",
+          "strokeWidth": 3
+        },
+        "sourceHandle": "agent-handle-right-source-wa-1747147320991PdqWGNJ1ghErYMoxV1FJO",
+        "targetHandle": "agent-handle-left-target-wa-1747147668832ZixXclnJTIyUZp57AKqAy"
+      },
+      {
+        "id": "wc-1747147685728fpNqsRLAIyHNH6WapbVyQ",
+        "source": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+        "target": "wa-1747147323059iAJ-kmksXTkdJHMe8ixtc",
+        "hidden": false,
+        "type": "hidden",
+        "selected": false
+      },
+      {
+        "id": "we-17471476969208W__XLFPgNv9AFG302dtD",
+        "source": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+        "target": "wa-17471476969197JhmOxwi1fGE69zWdgiki",
+        "hidden": false,
+        "type": "hidden",
+        "animated": false,
+        "selected": false,
+        "markerEnd": {
+          "type": "arrowclosed",
+          "color": "#ed8a34",
+          "width": 10,
+          "height": 10
+        },
+        "style": {
+          "stroke": "#ed8a34",
+          "strokeWidth": 3
+        },
+        "sourceHandle": null,
+        "targetHandle": null
+      },
+      {
+        "id": "wc-1747147729566AGRHXjCJWpciKM7USkX3k",
+        "source": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+        "target": "1747147450805z64e_Ozvf3F67CywB-aX5",
+        "hidden": false,
+        "type": "hidden",
+        "selected": false
+      }
+    ],
+    "viewport": {
+      "x": 7,
+      "y": -5,
+      "zoom": 0.8859259259259259
+    },
+    "agents": {
+      "users": [
+        {
+          "type": "agent",
+          "agentType": "user",
+          "name": "User",
+          "description": "A new User agent",
+          "tags": [],
+          "requirements": [],
+          "createdAt": "2025-05-13T14:42:00.991Z",
+          "updatedAt": "2025-05-13T14:42:00.991Z",
+          "data": {
+            "systemMessage": null,
+            "humanInputMode": "ALWAYS",
+            "codeExecutionConfig": false,
+            "agentDefaultAutoReply": null,
+            "maxConsecutiveAutoReply": null,
+            "termination": {
+              "type": "none",
+              "keywords": [],
+              "criterion": null,
+              "methodContent": null
+            },
+            "modelIds": [],
+            "skills": [],
+            "nestedChats": []
+          },
+          "id": "wa-1747147320991PdqWGNJ1ghErYMoxV1FJO"
+        }
+      ],
+      "assistants": [
+        {
+          "type": "agent",
+          "agentType": "assistant",
+          "name": "Researcher",
+          "description": "A researcher agent, capable of retrieving data",
+          "tags": [],
+          "requirements": [],
+          "createdAt": "2025-05-13T14:42:03.059Z",
+          "updatedAt": "2025-05-13T14:42:03.059Z",
+          "data": {
+            "systemMessage": "You are a engineer, please write down some code to retrieve the data needed. In case you need to install a library use You are an engineer. Write code if needed to retrieve data. If needed to install write code that runs in a windows PC like \n```sh\n   pip install library\n   ```",
+            "humanInputMode": "NEVER",
+            "codeExecutionConfig": false,
+            "agentDefaultAutoReply": null,
+            "maxConsecutiveAutoReply": null,
+            "termination": {
+              "type": "none",
+              "keywords": [],
+              "criterion": null,
+              "methodContent": null
+            },
+            "modelIds": [
+              "ws-174714788834484P_xLCpPJavk58zgEhaH"
+            ],
+            "skills": [],
+            "parentId": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+            "nestedChats": []
+          },
+          "id": "wa-1747147323059iAJ-kmksXTkdJHMe8ixtc"
+        },
+        {
+          "type": "agent",
+          "agentType": "assistant",
+          "name": "Innovator",
+          "description": "An innovator agent capable of producing ideas given input papers.",
+          "tags": [],
+          "requirements": [],
+          "createdAt": "2025-05-13T14:42:03.059Z",
+          "updatedAt": "2025-05-13T14:42:03.059Z",
+          "data": {
+            "systemMessage": "You are a innovator, write one innovative idea given the provided context. You only 2 sentences",
+            "humanInputMode": "NEVER",
+            "codeExecutionConfig": false,
+            "agentDefaultAutoReply": null,
+            "maxConsecutiveAutoReply": null,
+            "termination": {
+              "type": "none",
+              "keywords": [],
+              "criterion": null,
+              "methodContent": null
+            },
+            "modelIds": [
+              "ws-1747147290306EwQ97YnLGFhYwfXsdENxm"
+            ],
+            "skills": [],
+            "parentId": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+            "nestedChats": []
+          },
+          "id": "1747147450805z64e_Ozvf3F67CywB-aX5"
+        },
+        {
+          "type": "agent",
+          "agentType": "assistant",
+          "name": "Executor",
+          "description": "A new Assistant agent that executes code",
+          "tags": [],
+          "requirements": [],
+          "createdAt": "2025-05-13T14:48:16.919Z",
+          "updatedAt": "2025-05-13T14:48:16.919Z",
+          "data": {
+            "systemMessage": null,
+            "humanInputMode": "NEVER",
+            "codeExecutionConfig": {
+              "workDir": "coding",
+              "timeout": 34
+            },
+            "agentDefaultAutoReply": null,
+            "maxConsecutiveAutoReply": null,
+            "termination": {
+              "type": "none",
+              "keywords": [],
+              "criterion": null,
+              "methodContent": null
+            },
+            "modelIds": [],
+            "skills": [],
+            "parentId": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+            "nestedChats": []
+          },
+          "id": "wa-17471476969197JhmOxwi1fGE69zWdgiki"
+        }
+      ],
+      "managers": [
+        {
+          "type": "agent",
+          "agentType": "manager",
+          "name": "Manager",
+          "description": "A new Manager agent",
+          "tags": [],
+          "requirements": [],
+          "createdAt": "2025-05-13T14:47:48.832Z",
+          "updatedAt": "2025-05-13T14:47:48.832Z",
+          "data": {
+            "systemMessage": null,
+            "humanInputMode": "NEVER",
+            "codeExecutionConfig": false,
+            "agentDefaultAutoReply": null,
+            "maxConsecutiveAutoReply": null,
+            "termination": {
+              "type": "none",
+              "keywords": [],
+              "criterion": null,
+              "methodContent": null
+            },
+            "modelIds": [
+              "ws-174714788834484P_xLCpPJavk58zgEhaH"
+            ],
+            "skills": [],
+            "parentId": null,
+            "nestedChats": [],
+            "maxRound": null,
+            "adminName": null,
+            "speakers": {
+              "selectionMethod": "auto",
+              "selectionCustomMethod": "",
+              "maxRetriesForSelecting": null,
+              "selectionMode": "repeat",
+              "allowRepeat": true,
+              "allowedOrDisallowedTransitions": {},
+              "transitionsType": "allowed"
+            },
+            "enableClearHistory": false,
+            "sendIntroductions": false
+          },
+          "id": "wa-1747147668832ZixXclnJTIyUZp57AKqAy"
+        }
+      ],
+      "rag_users": [],
+      "swarm_agents": [],
+      "reasoning_agents": [],
+      "captain_agents": []
+    },
+    "models": [
+      {
+        "id": "ws-1747147290306EwQ97YnLGFhYwfXsdENxm",
+        "type": "model",
+        "name": "gpt-4",
+        "description": "A new model",
+        "tags": [],
+        "requirements": [],
+        "createdAt": "2025-05-13T14:41:30.306Z",
+        "updatedAt": "2025-05-13T14:41:50.950Z",
+        "data": {
+          "apiKey": "REPLACE_ME",
+          "apiType": "openai",
+          "apiVersion": null,
+          "baseUrl": null,
+          "temperature": null,
+          "topP": null,
+          "maxTokens": null,
+          "defaultHeaders": {},
+          "price": {
+            "promptPricePer1k": null,
+            "completionTokenPricePer1k": null
+          }
+        }
+      },
+      {
+        "id": "ws-174714788834484P_xLCpPJavk58zgEhaH",
+        "type": "model",
+        "name": "gpt-4o",
+        "description": "A new model",
+        "tags": [],
+        "requirements": [],
+        "createdAt": "2025-05-13T14:51:28.344Z",
+        "updatedAt": "2025-05-13T14:51:42.192Z",
+        "data": {
+          "apiKey": "REPLACE_ME",
+          "apiType": "openai",
+          "apiVersion": null,
+          "baseUrl": null,
+          "temperature": null,
+          "topP": null,
+          "maxTokens": null,
+          "defaultHeaders": {},
+          "price": {
+            "promptPricePer1k": null,
+            "completionTokenPricePer1k": null
+          }
+        }
+      }
+    ],
+    "skills": [],
+    "chats": [
+      {
+        "id": "we-1747147732530Sc8cqbQsDyeP1PM1ZiVki",
+        "data": {
+          "source": "wa-1747147320991PdqWGNJ1ghErYMoxV1FJO",
+          "target": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+          "name": "User => Manager",
+          "order": 0,
+          "description": "New connection",
+          "position": 1,
+          "clearHistory": true,
+          "maxTurns": null,
+          "message": {
+            "type": "string",
+            "content": "Please retrieve 1 recent papers on agentic AI from arxiv. After retrieving them write down a solid idea for research",
+            "context": {},
+            "use_carryover": false
+          },
+          "summary": {
+            "method": "last_msg",
+            "prompt": "",
+            "args": {}
+          },
+          "nestedChat": {
+            "message": null,
+            "reply": null
+          },
+          "prerequisites": [],
+          "maxRounds": 20,
+          "afterWork": null,
+          "flowAfterWork": null,
+          "available": {
+            "type": "none",
+            "value": null
+          },
+          "contextVariables": {},
+          "realSource": null,
+          "realTarget": null
+        }
+      },
+      {
+        "id": "wc-1747147685728fpNqsRLAIyHNH6WapbVyQ",
+        "data": {
+          "source": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+          "target": "wa-1747147323059iAJ-kmksXTkdJHMe8ixtc",
+          "name": "Chat",
+          "order": -1,
+          "description": "New connection",
+          "position": 1,
+          "clearHistory": true,
+          "maxTurns": null,
+          "message": {
+            "type": "none",
+            "content": null,
+            "context": {},
+            "use_carryover": false
+          },
+          "summary": {
+            "method": "last_msg",
+            "prompt": "",
+            "args": {}
+          },
+          "nestedChat": {
+            "message": null,
+            "reply": null
+          },
+          "prerequisites": [],
+          "maxRounds": 20,
+          "afterWork": null,
+          "flowAfterWork": null,
+          "available": {
+            "type": "none",
+            "value": null
+          },
+          "contextVariables": {},
+          "realSource": null,
+          "realTarget": null
+        }
+      },
+      {
+        "id": "we-17471476969208W__XLFPgNv9AFG302dtD",
+        "data": {
+          "source": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+          "target": "wa-17471476969197JhmOxwi1fGE69zWdgiki",
+          "name": "Manager => Executor",
+          "order": -1,
+          "description": "New connection",
+          "position": 2,
+          "clearHistory": true,
+          "maxTurns": null,
+          "message": {
+            "type": "none",
+            "content": null,
+            "context": {},
+            "use_carryover": false
+          },
+          "summary": {
+            "method": "last_msg",
+            "prompt": "",
+            "args": {}
+          },
+          "nestedChat": {
+            "message": null,
+            "reply": null
+          },
+          "prerequisites": [],
+          "maxRounds": 20,
+          "afterWork": null,
+          "flowAfterWork": null,
+          "available": {
+            "type": "none",
+            "value": null
+          },
+          "contextVariables": {},
+          "realSource": null,
+          "realTarget": null
+        }
+      },
+      {
+        "id": "wc-1747147729566AGRHXjCJWpciKM7USkX3k",
+        "data": {
+          "source": "wa-1747147668832ZixXclnJTIyUZp57AKqAy",
+          "target": "1747147450805z64e_Ozvf3F67CywB-aX5",
+          "name": "Chat",
+          "order": -1,
+          "description": "New connection",
+          "position": 3,
+          "clearHistory": true,
+          "maxTurns": null,
+          "message": {
+            "type": "none",
+            "content": null,
+            "context": {},
+            "use_carryover": false
+          },
+          "summary": {
+            "method": "last_msg",
+            "prompt": "",
+            "args": {}
+          },
+          "nestedChat": {
+            "message": null,
+            "reply": null
+          },
+          "prerequisites": [],
+          "maxRounds": 20,
+          "afterWork": null,
+          "flowAfterWork": null,
+          "available": {
+            "type": "none",
+            "value": null
+          },
+          "contextVariables": {},
+          "realSource": null,
+          "realTarget": null
+        }
+      }
+    ],
+    "isAsync": false,
+    "cacheSeed": 41
+  }
+}
