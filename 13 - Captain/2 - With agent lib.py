@@ -34,17 +34,7 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import autogen  # type: ignore
 from autogen import (
@@ -176,11 +166,7 @@ captain = CaptainAgent(
             "agent_model": "gpt-4o",
         },
         "autobuild_build_config": {
-            "default_llm_config": {
-                "temperature": 1,
-                "top_p": 0.95,
-                "max_tokens": 2048,
-            },
+            "default_llm_config": {"temperature": 1, "top_p": 0.95, "max_tokens": 2048},
             "code_execution_config": {
                 "timeout": 300,
                 "work_dir": "groupchat",

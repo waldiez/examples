@@ -34,17 +34,7 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import aiofiles
 import aiosqlite
@@ -167,9 +157,7 @@ def get_on_boarding_async_model_api_key(model_name: str) -> str:
 claude_3_7_sonnet_20250219_llm_config: dict[str, Any] = {
     "model": "claude-3-7-sonnet-20250219",
     "api_type": "anthropic",
-    "api_key": get_on_boarding_async_model_api_key(
-        "claude_3_7_sonnet_20250219"
-    ),
+    "api_key": get_on_boarding_async_model_api_key("claude_3_7_sonnet_20250219"),
 }
 
 gpt_3_5_turbo_llm_config: dict[str, Any] = {
@@ -285,12 +273,8 @@ async def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     data = [dict(zip(column_names, row)) for row in rows]
     await cursor.close()
     await conn.close()
-    async with aiofiles.open(
-        csv_file, "w", newline="", encoding="utf-8"
-    ) as file:
-        csv_writer = AsyncDictWriter(
-            file, fieldnames=column_names, dialect="unix"
-        )
+    async with aiofiles.open(csv_file, "w", newline="", encoding="utf-8") as file:
+        csv_writer = AsyncDictWriter(file, fieldnames=column_names, dialect="unix")
         await csv_writer.writeheader()
         await csv_writer.writerows(data)
     json_file = csv_file.replace(".csv", ".json")
@@ -379,9 +363,7 @@ async def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
 
 async def call_main() -> None:
     """Run the main function and print the results."""
-    results: Union[ChatResult, list[ChatResult], dict[int, ChatResult]] = (
-        await main()
-    )
+    results: Union[ChatResult, list[ChatResult], dict[int, ChatResult]] = await main()
     if isinstance(results, dict):
         # order by key
         ordered_results = dict(sorted(results.items()))

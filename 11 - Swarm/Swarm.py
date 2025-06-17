@@ -34,17 +34,7 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import autogen  # type: ignore
 from autogen import (
@@ -208,9 +198,7 @@ ORDER_DATABASE = {
 }
 
 
-def record_order_id(
-    order_id: str, context_variables: ContextVariables
-) -> ReplyResult:
+def record_order_id(order_id: str, context_variables: ContextVariables) -> ReplyResult:
     """Record the order ID in the workflow context"""
     target = AgentNameTarget("order_triage_agent")
     if order_id not in ORDER_DATABASE:
@@ -229,17 +217,14 @@ def record_order_id(
     )
 
 
-def check_order_id(
-    order_id: str, context_variables: ContextVariables
-) -> ReplyResult:
+def check_order_id(order_id: str, context_variables: ContextVariables) -> ReplyResult:
     """Check if the order ID is valid"""
     target = AgentNameTarget("order_triage_agent")
     # Restricts order to checking to the logged in user
     if (
         context_variables["logged_in_username"]
         and order_id in ORDER_DATABASE
-        and ORDER_DATABASE[order_id]["user"]
-        == context_variables["logged_in_username"]
+        and ORDER_DATABASE[order_id]["user"] == context_variables["logged_in_username"]
     ):
         return ReplyResult(
             target=target,
@@ -259,9 +244,7 @@ def login_customer_by_username(
     """Get and log the customer in by their username"""
     target = AgentNameTarget("authentication_agent")
     if username in USER_DATABASE:
-        context_variables["customer_name"] = USER_DATABASE[username][
-            "full_name"
-        ]
+        context_variables["customer_name"] = USER_DATABASE[username]["full_name"]
         context_variables["logged_in_username"] = username
         context_variables["logged_in"] = True
         context_variables["requires_login"] = False
@@ -478,9 +461,7 @@ order_mgmt_agent.handoffs.add_llm_condition(
                 "chat_queue": order_mgmt_agent_handoff_nested_chat_queue
             }
         ),
-        condition=StringLLMCondition(
-            prompt="Retrieve the status of the order."
-        ),
+        condition=StringLLMCondition(prompt="Retrieve the status of the order."),
         available=StringAvailableCondition("has_order_id"),
     )
 )

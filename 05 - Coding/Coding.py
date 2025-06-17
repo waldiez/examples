@@ -34,17 +34,7 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import autogen  # type: ignore
 from autogen import (
@@ -166,7 +156,7 @@ def get_and_plot_stock_data(
     data = yf.download(stock_symbols, start=start_date, end=end_date)
 
     # Get the closing prices
-    closing_prices = data['Close']
+    closing_prices = data["Close"]
 
     # Normalize the prices to start at 100 for easier comparison
     normalized_prices = closing_prices.div(closing_prices.iloc[0]) * 100
@@ -174,13 +164,11 @@ def get_and_plot_stock_data(
     # Create the plot
     plt.figure(figsize=(12, 6))
     for symbol in stock_symbols:
-        plt.plot(
-            normalized_prices.index, normalized_prices[symbol], label=symbol
-        )
+        plt.plot(normalized_prices.index, normalized_prices[symbol], label=symbol)
 
-    plt.title('Stock Prices')
-    plt.xlabel('Date')
-    plt.ylabel('Normalized Price (Base 100)')
+    plt.title("Stock Prices")
+    plt.xlabel("Date")
+    plt.ylabel("Normalized Price (Base 100)")
     plt.legend()
     plt.grid(True)
 
@@ -209,7 +197,7 @@ code_executor_agent_executor = LocalCommandLineCodeExecutor(
 assistant = AssistantAgent(
     name="assistant",
     description="Code Writer Agent",
-    system_message="You are a helpful AI assistant.\nSolve tasks using your coding and language tools.\nReply \"TERMINATE\" in the end when everything is done.",
+    system_message='You are a helpful AI assistant.\nSolve tasks using your coding and language tools.\nReply "TERMINATE" in the end when everything is done.',
     human_input_mode="NEVER",
     max_consecutive_auto_reply=None,
     default_auto_reply="",

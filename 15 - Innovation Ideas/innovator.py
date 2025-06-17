@@ -34,17 +34,7 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import autogen  # type: ignore
 from autogen import (
@@ -153,9 +143,7 @@ def get_innovator_model_api_key(model_name: str) -> str:
 # Tools
 
 
-def get_papers(
-    search_query: str, max_results: int
-) -> Annotated[str, "list of papers"]:
+def get_papers(search_query: str, max_results: int) -> Annotated[str, "list of papers"]:
     """return list of papers based on the user topic.
     Args:
         search_query (str): Name of topic of interest (e.g., 'agents')

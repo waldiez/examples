@@ -35,17 +35,7 @@ from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
 from typing import Annotated
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import autogen  # type: ignore
 from autogen import (
@@ -158,9 +148,7 @@ MADE_MOVE = False
 
 def get_legal_moves() -> Annotated[str, "A list of legal moves in UCI format"]:
     """Get a list of legal moves."""
-    return "Possible moves are: " + ",".join(
-        [str(move) for move in BOARD.legal_moves]
-    )
+    return "Possible moves are: " + ",".join([str(move) for move in BOARD.legal_moves])
 
 
 # pylint: disable=global-statement,unused-import

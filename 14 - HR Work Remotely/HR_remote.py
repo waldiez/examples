@@ -36,17 +36,7 @@ from dataclasses import asdict
 from email.mime.text import MIMEText
 from pprint import pprint
 from types import ModuleType
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 from typing import Optional, Any
 
 import autogen  # type: ignore
@@ -215,8 +205,8 @@ def login_by_username(
         context_variables["logged_in"] = True
         context_variables["requires_login"] = False
         context_variables["defined_department"] = True
-        context_variables["manager_name"] = department['manager']
-        context_variables["manager_email"] = department['manager_email']
+        context_variables["manager_name"] = department["manager"]
+        context_variables["manager_email"] = department["manager_email"]
         context_variables["max_remote_days"] = department["max_remote_days"]
         return ReplyResult(
             context_variables=context_variables,
@@ -288,21 +278,19 @@ def gmail_send_function(
     try:
         # Gmail API setup directly within the function
         SCOPES = [
-            'https://mail.google.com/',  # Full access to Gmail account
-            'https://www.googleapis.com/auth/gmail.send',  # Send-only access\
+            "https://mail.google.com/",  # Full access to Gmail account
+            "https://www.googleapis.com/auth/gmail.send",  # Send-only access\
         ]
 
         creds = None
         # Try to load existing credentials if available
-        token_path = 'token.json'
+        token_path = "token.json"
         # Check if token.json exists and contains valid credentials
         if os.path.exists(token_path):
             try:
-                with open(token_path, 'r') as token_file:
+                with open(token_path, "r") as token_file:
                     token_data = json.load(token_file)
-                creds = Credentials.from_authorized_user_info(
-                    token_data, SCOPES
-                )
+                creds = Credentials.from_authorized_user_info(token_data, SCOPES)
             except Exception as e:
                 print(f"Error loading token file: {str(e)}")
 
@@ -316,31 +304,31 @@ def gmail_send_function(
                 # Only trigger OAuth flow if we have no valid credentials
                 print("No valid credentials found, starting OAuth flow...")
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    'C:/Users/pathToFile/credentials.json', SCOPES
+                    "C:/Users/pathToFile/credentials.json", SCOPES
                 )
                 creds = flow.run_local_server(port=0)
                 print("Successfully authenticated with Gmail API")
 
             # Save the credentials for future runs
-            with open(token_path, 'w') as token:
+            with open(token_path, "w") as token:
                 token.write(creds.to_json())
                 print(f"Saved credentials to {token_path}")
         else:
             print("Using existing valid credentials")
 
         # Build the service
-        service = build('gmail', 'v1', credentials=creds)
+        service = build("gmail", "v1", credentials=creds)
 
         # Create a more complete message
         message = MIMEText(message_text)
-        message['to'] = recipient_email
-        message['subject'] = subject
+        message["to"] = recipient_email
+        message["subject"] = subject
 
         # Encode the message
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
 
         # Create the message body
-        create_message = {'raw': encoded_message}
+        create_message = {"raw": encoded_message}
 
         # Send the message
         send_message = (
@@ -349,7 +337,7 @@ def gmail_send_function(
             .send(userId=sender_email, body=create_message)
             .execute()
         )
-        context_variables['email_sent'] = True
+        context_variables["email_sent"] = True
         return ReplyResult(
             context_variables=context_variables,
             message=f"Email sent successfully to {recipient_email} with message ID: {send_message['id']}",
@@ -535,12 +523,7 @@ hr_triage_agent.handoffs.set_after_work(target=RevertToUserTarget())
 
 manager_pattern = DefaultPattern(
     initial_agent=hr_triage_agent,
-    agents=[
-        hr_triage_agent,
-        authentication_agent,
-        remote_policy_agent,
-        email_agent,
-    ],
+    agents=[hr_triage_agent, authentication_agent, remote_policy_agent, email_agent],
     user_agent=user_proxy,
     group_manager_args={
         "llm_config": autogen.LLMConfig(

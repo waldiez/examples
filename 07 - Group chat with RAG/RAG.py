@@ -34,17 +34,7 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import autogen  # type: ignore
 from autogen import (
@@ -56,9 +46,7 @@ from autogen import (
     runtime_logging,
 )
 from autogen.agentchat import GroupChatManager, initiate_group_chat
-from autogen.agentchat.contrib.retrieve_user_proxy_agent import (
-    RetrieveUserProxyAgent,
-)
+from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
 from autogen.agentchat.contrib.vectordb.chromadb import ChromaVectorDB
 from autogen.agentchat.group import ContextVariables
 import chromadb
@@ -286,12 +274,7 @@ senior_python_engineer = ConversableAgent(
 )
 
 manager_group_chat = GroupChat(
-    agents=[
-        product_manager,
-        senior_python_engineer,
-        code_reviewer,
-        boss_assistant,
-    ],
+    agents=[product_manager, senior_python_engineer, code_reviewer, boss_assistant],
     enable_clear_history=False,
     send_introductions=False,
     messages=[],
