@@ -252,7 +252,7 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
 
     stop_logging()
 
-    # pylint: disable=broad-except,too-many-try-statements
+    # pylint: disable=broad-exception-caught,too-many-try-statements
     try:
         reasoning.visualize_tree()
         if os.path.exists("tree_of_thoughts.png"):
@@ -261,10 +261,9 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
     except BaseException:
         pass
     # save the tree to json
+    # pylint: disable=protected-access
     try:
-        data = (
-            reasoning._root.to_dict()
-        )  # pylint: disable=protected-access  # pyright: ignore
+        data = reasoning._root.to_dict()  # pyright: ignore
         with open("reasoning_reasoning_tree.json", "w", encoding="utf-8") as f:
             json.dump(data, f)
     except BaseException:

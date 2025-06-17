@@ -265,7 +265,7 @@ async def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     query = f"SELECT * FROM {table}"  # nosec
     try:
         cursor = await conn.execute(query)
-    except BaseException:  # pylint: disable=broad-except
+    except BaseException:  # pylint: disable=broad-exception-caught
         await conn.close()
         return
     rows = await cursor.fetchall()

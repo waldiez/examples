@@ -162,7 +162,7 @@ def make_move(
     global MADE_MOVE
     try:
         chess_move = chess.Move.from_uci(move)
-    except BaseException:  # pylint: disable=broad-except
+    except BaseException:  # pylint: disable=broad-exception-caught
         chess_move = BOARD.parse_san(move)
     BOARD.push_uci(str(move))
     # Get the piece name.
