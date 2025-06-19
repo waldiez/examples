@@ -17,7 +17,7 @@
 
 Standup comedians with user input.
 
-Requirements: ag2[openai]==0.9.2
+Requirements: ag2[openai]==0.9.3
 Tags: standup, commedy
 🧩 generated with ❤️ by Waldiez.
 """

@@ -17,7 +17,7 @@
 
 Planning and Stock Report Generation, using Ag2’s group patterns.
 
-Requirements: ag2[openai]==0.9.2
+Requirements: ag2[openai]==0.9.3
 Tags: Planning, Stock report, Group
 🧩 generated with ❤️ by Waldiez.
 """

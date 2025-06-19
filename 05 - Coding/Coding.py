@@ -17,7 +17,7 @@
 
 Coding and Financial Analysis
 
-Requirements: ag2[anthropic]==0.9.2, ag2[openai]==0.9.2
+Requirements: ag2[anthropic]==0.9.3, ag2[openai]==0.9.3
 Tags: Coding
 🧩 generated with ❤️ by Waldiez.
 """
