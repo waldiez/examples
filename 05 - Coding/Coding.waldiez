@@ -1,5 +1,5 @@
 {
-  "id": "wf-afhmSNzq3QHTSjqYUhtAF",
+  "id": "id-9d53ac1f-442b-4c9d-a6bf-edee40a8215e",
   "type": "flow",
   "version": "0.4.11",
   "storageId": "wf-afhmSNzq3QHTSjqYUhtAF",
@@ -10,7 +10,7 @@
   ],
   "requirements": [],
   "createdAt": "2025-05-19T14:14:02.364Z",
-  "updatedAt": "2025-05-31T16:01:49.106Z",
+  "updatedAt": "2025-06-19T18:51:23.753Z",
   "data": {
     "nodes": [
       {
@@ -21,8 +21,8 @@
           "y": 10
         },
         "measured": {
-          "width": 182,
-          "height": 182
+          "width": 180,
+          "height": 100
         },
         "selected": false,
         "hidden": true,
@@ -36,8 +36,8 @@
           "y": 10
         },
         "measured": {
-          "width": 182,
-          "height": 182
+          "width": 180,
+          "height": 100
         },
         "selected": false,
         "hidden": true
@@ -53,8 +53,8 @@
           "y": 300
         },
         "measured": {
-          "width": 200,
-          "height": 211
+          "width": 130,
+          "height": 120
         },
         "className": "",
         "selected": false,
@@ -72,8 +72,8 @@
           "y": 240
         },
         "measured": {
-          "width": 200,
-          "height": 215
+          "width": 180,
+          "height": 120
         },
         "selected": false,
         "hidden": false,
@@ -105,16 +105,16 @@
       }
     ],
     "viewport": {
-      "x": -220.9256198347108,
-      "y": -326.0198347107438,
-      "zoom": 1.8495867768595042
+      "x": -90.90701406916105,
+      "y": -131.99464040609433,
+      "zoom": 1.447117844015132
     },
     "agents": {
       "groupManagerAgents": [],
       "userProxyAgents": [
         {
           "type": "agent",
-          "name": "Code Executor Agent",
+          "name": "Code Executor",
           "description": "Code Executor Agent",
           "tags": [],
           "requirements": [],
@@ -166,7 +166,7 @@
       "assistantAgents": [
         {
           "type": "agent",
-          "name": "Assistant",
+          "name": "Code Writer",
           "description": "Code Writer Agent",
           "tags": [],
           "requirements": [],
@@ -230,7 +230,7 @@
         "tags": [],
         "requirements": [],
         "createdAt": "2025-05-19T14:15:00.190Z",
-        "updatedAt": "2025-05-19T15:05:39.419Z",
+        "updatedAt": "2025-06-19T18:34:53.172Z",
         "data": {
           "apiKey": "REPLACE_ME",
           "apiType": "anthropic",
@@ -262,9 +262,13 @@
         "name": "get_and_plot_stock_data",
         "description": "get_and_plot_stock_data",
         "tags": [],
-        "requirements": [],
+        "requirements": [
+          "pandas",
+          "yfinance",
+          "matplotlib"
+        ],
         "createdAt": "2025-05-19T15:43:31.610Z",
-        "updatedAt": "2025-05-19T15:51:01.054Z",
+        "updatedAt": "2025-06-19T18:33:57.414Z",
         "data": {
           "content": "def get_and_plot_stock_data(\n    stock_symbols: list[str],\n    start_date: str,\n    end_date: str,\n    filename: str,\n) -> str:\n    # pylint: disable=import-outside-toplevel\n    import pandas as pd\n    import matplotlib.pyplot as plt\n    import yfinance as yf\n\n    data = yf.download(stock_symbols, start=start_date, end=end_date)\n\n    # Get the closing prices\n    closing_prices = data['Close']\n\n    # Normalize the prices to start at 100 for easier comparison\n    normalized_prices = closing_prices.div(closing_prices.iloc[0]) * 100\n\n    # Create the plot\n    plt.figure(figsize=(12, 6))\n    for symbol in stock_symbols:\n        plt.plot(normalized_prices.index, normalized_prices[symbol], label=symbol)\n\n    plt.title('Stock Prices')\n    plt.xlabel('Date')\n    plt.ylabel('Normalized Price (Base 100)')\n    plt.legend()\n    plt.grid(True)\n\n    # Save the figure\n    plt.savefig(filename)\n    plt.close()\n    return \"ok\"\n",
           "toolType": "custom",
@@ -281,7 +285,7 @@
         "data": {
           "sourceType": "user_proxy",
           "targetType": "assistant",
-          "name": "Code Executor Agent => Assistant",
+          "name": "Code Executor => Code Writer",
           "order": 0,
           "description": "The code executor asks the code writer to generate a plot with stock prices.",
           "position": 1,
@@ -319,7 +323,6 @@
       }
     ],
     "isAsync": false,
-    "cacheSeed": null,
     "silent": false
   }
 }

@@ -17,7 +17,7 @@
 
 Coding and Financial Analysis
 
-Requirements: ag2[anthropic]==0.9.3, ag2[openai]==0.9.3
+Requirements: ag2[anthropic]==0.9.3, ag2[openai]==0.9.3, matplotlib, pandas, yfinance
 Tags: Coding
 🧩 generated with ❤️ by Waldiez.
 """
@@ -188,14 +188,25 @@ claude_3_7_sonnet_20250219_llm_config: dict[str, Any] = {
 
 # Agents
 
-code_executor_agent_executor = LocalCommandLineCodeExecutor(
+code_executor_executor = LocalCommandLineCodeExecutor(
     work_dir="coding",
     timeout=60,
     functions=[get_and_plot_stock_data],
 )
 
-assistant = AssistantAgent(
-    name="assistant",
+code_executor = UserProxyAgent(
+    name="code_executor",
+    description="Code Executor Agent",
+    human_input_mode="ALWAYS",
+    max_consecutive_auto_reply=10,
+    default_auto_reply="Please continue. If everything is done, reply 'TERMINATE'.",
+    code_execution_config={"executor": code_executor_executor},
+    is_termination_msg=None,  # pyright: ignore
+    llm_config=False,  # pyright: ignore
+)
+
+code_writer = AssistantAgent(
+    name="code_writer",
     description="Code Writer Agent",
     system_message='You are a helpful AI assistant.\nSolve tasks using your coding and language tools.\nReply "TERMINATE" in the end when everything is done.',
     human_input_mode="NEVER",
@@ -207,31 +218,20 @@ assistant = AssistantAgent(
         config_list=[
             claude_3_7_sonnet_20250219_llm_config,
         ],
-        cache_seed=None,
+        cache_seed=42,
     ),
-)
-
-code_executor_agent = UserProxyAgent(
-    name="code_executor_agent",
-    description="Code Executor Agent",
-    human_input_mode="ALWAYS",
-    max_consecutive_auto_reply=10,
-    default_auto_reply="Please continue. If everything is done, reply 'TERMINATE'.",
-    code_execution_config={"executor": code_executor_agent_executor},
-    is_termination_msg=None,  # pyright: ignore
-    llm_config=False,  # pyright: ignore
 )
 
 register_function(
     get_and_plot_stock_data,
-    caller=assistant,
-    executor=code_executor_agent,
+    caller=code_writer,
+    executor=code_executor,
     name="get_and_plot_stock_data",
     description="get_and_plot_stock_data",
 )
 
 
-def callable_message_code_executor_agent_to_assistant(
+def callable_message_code_executor_to_code_writer(
     sender: ConversableAgent,
     recipient: ConversableAgent,
     context: dict[str, Any],
@@ -312,14 +312,16 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
     """
-    results = code_executor_agent.initiate_chat(
-        assistant,
-        summary_method="last_msg",
-        clear_history=False,
-        message=callable_message_code_executor_agent_to_assistant,
-    )
+    with Cache.disk(cache_seed=42) as cache:  # pyright: ignore
+        results = code_executor.initiate_chat(
+            code_writer,
+            cache=cache,
+            summary_method="last_msg",
+            clear_history=False,
+            message=callable_message_code_executor_to_code_writer,
+        )
 
-    stop_logging()
+        stop_logging()
     return results
 
 

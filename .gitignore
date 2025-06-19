@@ -1,6 +1,7 @@
 *
 !*/
 !**/*.waldiez
+!**/*.waldiezTool
 !**/*.py
 !**/*.ipynb
 **/*_api_keys.py
