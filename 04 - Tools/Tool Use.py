@@ -17,8 +17,8 @@
 
 Tool Use and Conversational Chess
 
-Requirements: ag2[openai]==0.9.3, chess
-Tags:
+Requirements: ag2[openai]==0.9.2, chess
+Tags: 
 🧩 generated with ❤️ by Waldiez.
 """
 
@@ -38,21 +38,10 @@ from typing import Annotated
 from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import autogen  # type: ignore
-from autogen import (
-    Agent,
-    AssistantAgent,
-    Cache,
-    ChatResult,
-    ConversableAgent,
-    GroupChat,
-    UserProxyAgent,
-    register_function,
-    runtime_logging,
-)
+from autogen import Agent, AssistantAgent, Cache, ChatResult, ConversableAgent, GroupChat, register_function, runtime_logging
 import chess
 import chess.svg
 import numpy as np
-
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"
@@ -75,11 +64,9 @@ if not hasattr(np, "_no_pep50_warning"):
             Nothing.
         """
         yield
-
     setattr(np, "_no_pep50_warning", _np_no_nep50_warning)  # noqa
 
 # Start logging.
-
 
 def start_logging() -> None:
     """Start logging."""
@@ -119,7 +106,6 @@ def load_api_key_module(flow_name: str) -> ModuleType:
         return importlib.reload(sys.modules[module_name])
     return importlib.import_module(module_name)
 
-
 __MODELS_MODULE__ = load_api_key_module("tool_use")
 
 
@@ -148,8 +134,9 @@ MADE_MOVE = False
 
 def get_legal_moves() -> Annotated[str, "A list of legal moves in UCI format"]:
     """Get a list of legal moves."""
-    return "Possible moves are: " + ",".join([str(move) for move in BOARD.legal_moves])
-
+    return "Possible moves are: " + ",".join(
+        [str(move) for move in BOARD.legal_moves]
+    )
 
 # pylint: disable=global-statement,unused-import
 
@@ -176,23 +163,19 @@ def make_move(
         else chess.piece_name(piece.piece_type)
     )
     MADE_MOVE = True  # pyright: ignore
-    return (
-        f"Moved {piece_name} ({piece_symbol}) from "
-        f"{chess.SQUARE_NAMES[chess_move.from_square]} to "
+    return f"Moved {piece_name} ({piece_symbol}) from "\
+        f"{chess.SQUARE_NAMES[chess_move.from_square]} to "\
         f"{chess.SQUARE_NAMES[chess_move.to_square]}."
-    )
-
 
 # Models
 
 gpt_3_5_turbo_llm_config: dict[str, Any] = {
     "model": "gpt-3.5-turbo",
     "api_type": "openai",
-    "api_key": get_tool_use_model_api_key("gpt_3_5_turbo"),
+    "api_key": get_tool_use_model_api_key("gpt_3_5_turbo")
 }
 
 # Agents
-
 
 def is_termination_message_board_proxy(
     message: dict[str, Any],
@@ -207,7 +190,6 @@ def is_termination_message_board_proxy(
         return True
     return False
 
-
 board_proxy = AssistantAgent(
     name="board_proxy",
     description="Board Proxy",
@@ -219,7 +201,7 @@ board_proxy = AssistantAgent(
     llm_config=False,  # pyright: ignore
 )
 
-player_black = UserProxyAgent(
+player_black = AssistantAgent(
     name="player_black",
     description="Player Black",
     system_message="You are a chess player and you play as black. First call get_legal_moves(), to get a list of legal moves. Then call make_move(move) to make a move.",
@@ -232,11 +214,11 @@ player_black = UserProxyAgent(
         config_list=[
             gpt_3_5_turbo_llm_config,
         ],
-        cache_seed=None,
+        cache_seed=42,
     ),
 )
 
-player_white = UserProxyAgent(
+player_white = AssistantAgent(
     name="player_white",
     description="Player White",
     system_message="You are a chess player and you play as white. First call get_legal_moves(), to get a list of legal moves. Then call make_move(move) to make a move.",
@@ -249,7 +231,7 @@ player_white = UserProxyAgent(
         config_list=[
             gpt_3_5_turbo_llm_config,
         ],
-        cache_seed=None,
+        cache_seed=42,
     ),
 )
 
@@ -260,7 +242,7 @@ player_white_chat_queue: list[dict[str, Any]] = [
         "chat_id": 0,
         "recipient": player_white,
         "sender": board_proxy,
-        "message": None,
+        "message": None
     },
 ]
 
@@ -278,7 +260,7 @@ player_black_chat_queue: list[dict[str, Any]] = [
         "chat_id": 1,
         "recipient": player_black,
         "sender": board_proxy,
-        "message": None,
+        "message": None
     },
 ]
 
@@ -319,7 +301,6 @@ register_function(
     description="Make a move on the board.",
 )
 
-
 def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     """Convert a sqlite table to csv and json files.
 
@@ -351,7 +332,6 @@ def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     with open(json_file, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
-
 def stop_logging() -> None:
     """Stop logging."""
     runtime_logging.stop()
@@ -370,8 +350,8 @@ def stop_logging() -> None:
         get_sqlite_out("flow.db", table, dest)
 
 
-# Start chatting
 
+# Start chatting
 
 def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
     """Start chatting.
@@ -382,15 +362,17 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
     """
-    results = player_black.initiate_chat(
-        player_white,
-        summary_method="last_msg",
-        max_turns=2,
-        clear_history=False,
-        message="Let's play chess! Your move.",
-    )
+    with Cache.disk(cache_seed=42) as cache:  # pyright: ignore
+        results = player_black.initiate_chat(
+            player_white,
+            cache=cache,
+            summary_method="last_msg",
+            max_turns=2,
+            clear_history=False,
+            message="Let's play chess! Your move.",
+        )
 
-    stop_logging()
+        stop_logging()
     return results
 
 

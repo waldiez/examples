@@ -1,5 +1,5 @@
 {
-  "id": "wf-afhmSNzq3QHTSjqYUhtAF",
+  "id": "KYd3gDaGM1jXMYVYA03u6OcQzVVZNpUn",
   "type": "flow",
   "version": "0.4.11",
   "storageId": "wf-afhmSNzq3QHTSjqYUhtAF",
@@ -9,8 +9,8 @@
   "requirements": [
     "chess"
   ],
-  "createdAt": "2025-05-19T05:29:44.181Z",
-  "updatedAt": "2025-05-31T16:01:21.910Z",
+  "createdAt": "2025-06-20T16:22:33.376Z",
+  "updatedAt": "2025-06-20T16:22:51.126Z",
   "data": {
     "nodes": [
       {
@@ -47,7 +47,7 @@
         "id": "wt-1747632755319FHYH_ux2NoDTXClD37qvr",
         "type": "tool",
         "position": {
-          "x": 240,
+          "x": 200,
           "y": 10
         },
         "measured": {
@@ -62,7 +62,7 @@
         "id": "wt-1747632773047yPBc7GG6He9Z_uSN-U1u0",
         "type": "tool",
         "position": {
-          "x": 480,
+          "x": 400,
           "y": 10
         },
         "measured": {
@@ -84,13 +84,16 @@
           "y": 450
         },
         "measured": {
-          "width": 200,
-          "height": 230
+          "width": 220,
+          "height": 135
         },
         "className": "",
         "selected": false,
         "dragging": false,
-        "hidden": false
+        "hidden": false,
+        "width": 220,
+        "height": 135,
+        "resizing": false
       },
       {
         "id": "1747633035639vcXujJkXlY_IOT7CJWFml",
@@ -103,13 +106,16 @@
           "y": 150
         },
         "measured": {
-          "width": 200,
-          "height": 230
+          "width": 220,
+          "height": 135
         },
         "className": "",
         "selected": false,
         "dragging": false,
-        "hidden": false
+        "hidden": false,
+        "width": 220,
+        "height": 135,
+        "resizing": false
       },
       {
         "id": "wa-1747632788354NCzu_aqKb0Zd92i-k3wBM",
@@ -122,10 +128,10 @@
           "y": 150
         },
         "measured": {
-          "width": 200,
-          "height": 211
+          "width": 180,
+          "height": 120
         },
-        "selected": true,
+        "selected": false,
         "dragging": false,
         "className": "",
         "hidden": false
@@ -185,13 +191,14 @@
       }
     ],
     "viewport": {
-      "x": 32.29245283018861,
-      "y": -113.05660377358492,
-      "zoom": 1.1603773584905661
+      "x": -63,
+      "y": -110.66666666666669,
+      "zoom": 1.162962962962963
     },
     "agents": {
       "groupManagerAgents": [],
-      "userProxyAgents": [
+      "userProxyAgents": [],
+      "assistantAgents": [
         {
           "type": "agent",
           "name": "Player White",
@@ -249,10 +256,11 @@
             "handoffs": [],
             "contextVariables": {},
             "updateAgentStateBeforeReply": [],
-            "afterWork": null
+            "afterWork": null,
+            "isMultimodal": false
           },
           "id": "wa-1747632837301wu22ovYsUaHbF_P6U0J74",
-          "agentType": "user_proxy"
+          "agentType": "assistant"
         },
         {
           "type": "agent",
@@ -311,13 +319,12 @@
             "handoffs": [],
             "contextVariables": {},
             "updateAgentStateBeforeReply": [],
-            "afterWork": null
+            "afterWork": null,
+            "isMultimodal": false
           },
           "id": "1747633035639vcXujJkXlY_IOT7CJWFml",
-          "agentType": "user_proxy"
-        }
-      ],
-      "assistantAgents": [
+          "agentType": "assistant"
+        },
         {
           "type": "agent",
           "name": "Board Proxy",
