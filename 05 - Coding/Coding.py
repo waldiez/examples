@@ -218,7 +218,7 @@ code_writer = AssistantAgent(
         config_list=[
             claude_3_7_sonnet_20250219_llm_config,
         ],
-        cache_seed=42,
+        cache_seed=None,
     ),
 )
 
@@ -312,16 +312,14 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
     """
-    with Cache.disk(cache_seed=42) as cache:  # pyright: ignore
-        results = code_executor.initiate_chat(
-            code_writer,
-            cache=cache,
-            summary_method="last_msg",
-            clear_history=False,
-            message=callable_message_code_executor_to_code_writer,
-        )
+    results = code_executor.initiate_chat(
+        code_writer,
+        summary_method="last_msg",
+        clear_history=False,
+        message=callable_message_code_executor_to_code_writer,
+    )
 
-        stop_logging()
+    stop_logging()
     return results
 
 
