@@ -1,7 +1,7 @@
 {
-  "id": "id-f7e5b321-d14e-4671-9c2c-1da91645ac7d",
+  "id": "id-3050d67d-3c75-47e2-a234-064f4cfd5428",
   "type": "flow",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "storageId": "wf-1750886744218w88W3p9epKgm3XDm0VWFl",
   "name": "Weather tips agent ",
   "description": "A workflow containing a single agent capable of understanding images, writing code and providing tips for the weather.",
@@ -13,23 +13,9 @@
   ],
   "requirements": [],
   "createdAt": "2025-06-25T21:25:44.218Z",
-  "updatedAt": "2025-06-26T11:28:09.456Z",
+  "updatedAt": "2025-06-26T12:28:39.173Z",
   "data": {
     "nodes": [
-      {
-        "id": "wt-1750886800914z0JYA4GA_0FhwiHgMjdGC",
-        "type": "model",
-        "position": {
-          "x": null,
-          "y": null
-        },
-        "measured": {
-          "width": 180,
-          "height": 100
-        },
-        "selected": false,
-        "hidden": true
-      },
       {
         "id": "wa-1750886778071sx8LwK3oRwHY0YJ7xQ4SE",
         "type": "agent",
@@ -63,10 +49,24 @@
           "width": 180,
           "height": 120
         },
-        "selected": false,
+        "selected": true,
         "dragging": false,
         "className": "",
         "hidden": false
+      },
+      {
+        "id": "wt-1750940876900KDhGxKOv8Vy8dNDH3ydI_",
+        "type": "model",
+        "position": {
+          "x": 0,
+          "y": 10
+        },
+        "measured": {
+          "width": 180,
+          "height": 100
+        },
+        "selected": false,
+        "hidden": true
       }
     ],
     "edges": [
@@ -93,9 +93,9 @@
       }
     ],
     "viewport": {
-      "x": 148.68000000000012,
-      "y": -153.39199999999983,
-      "zoom": 1.4591999999999996
+      "x": 73.5454545454545,
+      "y": -100.00000000000003,
+      "zoom": 1.490909090909091
     },
     "agents": {
       "groupManagerAgents": [],
@@ -169,7 +169,7 @@
               "methodContent": null
             },
             "modelIds": [
-              "wt-1750886800914z0JYA4GA_0FhwiHgMjdGC"
+              "wt-1750940876900KDhGxKOv8Vy8dNDH3ydI_"
             ],
             "tools": [],
             "nestedChats": [
@@ -202,14 +202,14 @@
     },
     "models": [
       {
-        "id": "wt-1750886800914z0JYA4GA_0FhwiHgMjdGC",
+        "id": "wt-1750940876900KDhGxKOv8Vy8dNDH3ydI_",
         "type": "model",
         "name": "gpt-4.1",
         "description": "A new model",
         "tags": [],
         "requirements": [],
-        "createdAt": "2025-06-25T21:26:40.914Z",
-        "updatedAt": "2025-06-25T21:27:14.282Z",
+        "createdAt": "2025-06-26T12:27:56.900Z",
+        "updatedAt": "2025-06-26T12:28:31.257Z",
         "data": {
           "apiKey": "REPLACE_ME",
           "apiType": "openai",
@@ -219,11 +219,11 @@
           "topP": null,
           "maxTokens": null,
           "aws": {
-            "region": null,
             "accessKey": null,
+            "profileName": null,
+            "region": null,
             "secretKey": null,
-            "sessionToken": null,
-            "profileName": null
+            "sessionToken": null
           },
           "extras": {},
           "defaultHeaders": {},
@@ -282,7 +282,6 @@
       }
     ],
     "isAsync": false,
-    "cacheSeed": 42,
     "silent": false
   }
 }
