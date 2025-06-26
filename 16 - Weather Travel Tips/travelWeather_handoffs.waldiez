@@ -1,5 +1,5 @@
 {
-  "id": "id-36f809e1-1c8c-4fc8-99a5-5657895e9526",
+  "id": "id-8a2fe765-8a83-4cc8-ac84-741b8368e30d",
   "type": "flow",
   "version": "0.5.0",
   "storageId": "wf-1750765176648stPd3Agvx5FqouIKo96p2",
@@ -12,69 +12,9 @@
   ],
   "requirements": [],
   "createdAt": "2025-05-19T16:27:28.320Z",
-  "updatedAt": "2025-06-26T11:33:17.858Z",
+  "updatedAt": "2025-06-26T12:16:06.277Z",
   "data": {
     "nodes": [
-      {
-        "id": "wt-1750765257520GExCPjHtN1kWscxPGJZuW",
-        "type": "model",
-        "position": {
-          "x": null,
-          "y": null
-        },
-        "measured": {
-          "width": 180,
-          "height": 100
-        },
-        "selected": false,
-        "hidden": true,
-        "className": ""
-      },
-      {
-        "id": "wt-17508380635787usx8rZejmJPD44tFbRrX",
-        "type": "model",
-        "position": {
-          "x": null,
-          "y": null
-        },
-        "measured": {
-          "width": 180,
-          "height": 100
-        },
-        "selected": false,
-        "hidden": true,
-        "className": ""
-      },
-      {
-        "id": "wt-1750874495122d32Jr6dPQvaW_EXkVBKv0",
-        "type": "tool",
-        "position": {
-          "x": null,
-          "y": null
-        },
-        "measured": {
-          "width": 180,
-          "height": 100
-        },
-        "selected": false,
-        "hidden": true,
-        "className": ""
-      },
-      {
-        "id": "wt-1750877821520-QaQNsiYlFUgV4fNQ-sRK",
-        "type": "tool",
-        "position": {
-          "x": null,
-          "y": null
-        },
-        "measured": {
-          "width": 180,
-          "height": 100
-        },
-        "selected": false,
-        "hidden": true,
-        "className": ""
-      },
       {
         "id": "wa-1750768072864H674JRW667rbSPKXtaiy2",
         "type": "agent",
@@ -92,7 +32,7 @@
         "selected": false,
         "dragging": false,
         "className": "",
-        "hidden": false,
+        "hidden": true,
         "width": 720,
         "height": 470,
         "resizing": false
@@ -114,7 +54,7 @@
         "selected": false,
         "dragging": false,
         "className": "",
-        "hidden": false
+        "hidden": true
       },
       {
         "id": "wa-1750765215534eqh-4exE_Bsr9Suy7t8ml",
@@ -132,7 +72,7 @@
         },
         "className": "",
         "selected": false,
-        "hidden": false,
+        "hidden": true,
         "dragging": false,
         "extent": "parent",
         "parentId": "wa-1750768072864H674JRW667rbSPKXtaiy2"
@@ -155,7 +95,7 @@
         "selected": false,
         "dragging": false,
         "className": "",
-        "hidden": false,
+        "hidden": true,
         "parentId": "wa-1750768072864H674JRW667rbSPKXtaiy2"
       },
       {
@@ -176,8 +116,50 @@
         "selected": false,
         "dragging": false,
         "className": "",
-        "hidden": false,
+        "hidden": true,
         "parentId": "wa-1750768072864H674JRW667rbSPKXtaiy2"
+      },
+      {
+        "id": "wt-17509397478638Xgajkin_rBgkwWIVzTI8",
+        "type": "tool",
+        "position": {
+          "x": 0,
+          "y": 10
+        },
+        "measured": {
+          "width": 180,
+          "height": 100
+        },
+        "selected": false,
+        "hidden": false
+      },
+      {
+        "id": "wt-1750939811519GWjKtiHyjAd0rUOtgK2f8",
+        "type": "tool",
+        "position": {
+          "x": 200,
+          "y": 10
+        },
+        "measured": {
+          "width": 180,
+          "height": 100
+        },
+        "selected": false,
+        "hidden": false
+      },
+      {
+        "id": "wt-1750939868113HQlXK8cc9PPOtaXnBIpOs",
+        "type": "model",
+        "position": {
+          "x": 0,
+          "y": 10
+        },
+        "measured": {
+          "width": 180,
+          "height": 100
+        },
+        "selected": false,
+        "hidden": true
       }
     ],
     "edges": [
@@ -288,9 +270,9 @@
       }
     ],
     "viewport": {
-      "x": -7.3125,
-      "y": -5.864583333333329,
-      "zoom": 0.7770833333333333
+      "x": 20,
+      "y": 40,
+      "zoom": 0.76875
     },
     "agents": {
       "groupManagerAgents": [
@@ -314,9 +296,7 @@
               "criterion": null,
               "methodContent": null
             },
-            "modelIds": [
-              "wt-1750765257520GExCPjHtN1kWscxPGJZuW"
-            ],
+            "modelIds": [],
             "tools": [],
             "nestedChats": [
               {
@@ -436,11 +416,11 @@
               "methodContent": null
             },
             "modelIds": [
-              "wt-1750765257520GExCPjHtN1kWscxPGJZuW"
+              "wt-1750939868113HQlXK8cc9PPOtaXnBIpOs"
             ],
             "tools": [
               {
-                "id": "wt-1750877821520-QaQNsiYlFUgV4fNQ-sRK",
+                "id": "wt-1750939811519GWjKtiHyjAd0rUOtgK2f8",
                 "executorId": "wa-1750765215534eqh-4exE_Bsr9Suy7t8ml"
               }
             ],
@@ -502,11 +482,11 @@
               "methodContent": null
             },
             "modelIds": [
-              "wt-1750765257520GExCPjHtN1kWscxPGJZuW"
+              "wt-1750939868113HQlXK8cc9PPOtaXnBIpOs"
             ],
             "tools": [
               {
-                "id": "wt-1750874495122d32Jr6dPQvaW_EXkVBKv0",
+                "id": "wt-17509397478638Xgajkin_rBgkwWIVzTI8",
                 "executorId": "wa-1750769182526RKl73IPAMvERVGPjvgSYB"
               }
             ],
@@ -563,7 +543,7 @@
               "methodContent": null
             },
             "modelIds": [
-              "wt-1750765257520GExCPjHtN1kWscxPGJZuW"
+              "wt-1750939868113HQlXK8cc9PPOtaXnBIpOs"
             ],
             "tools": [],
             "parentId": "wa-1750768072864H674JRW667rbSPKXtaiy2",
@@ -605,14 +585,14 @@
     },
     "models": [
       {
-        "id": "wt-1750765257520GExCPjHtN1kWscxPGJZuW",
+        "id": "wt-1750939868113HQlXK8cc9PPOtaXnBIpOs",
         "type": "model",
         "name": "gpt-4.1",
         "description": "A new model",
         "tags": [],
         "requirements": [],
-        "createdAt": "2025-06-24T11:40:57.520Z",
-        "updatedAt": "2025-06-24T11:41:09.182Z",
+        "createdAt": "2025-06-26T12:11:08.113Z",
+        "updatedAt": "2025-06-26T12:11:17.615Z",
         "data": {
           "apiKey": "REPLACE_ME",
           "apiType": "openai",
@@ -622,43 +602,11 @@
           "topP": null,
           "maxTokens": null,
           "aws": {
-            "region": null,
             "accessKey": null,
-            "secretKey": null,
-            "sessionToken": null,
-            "profileName": null
-          },
-          "extras": {},
-          "defaultHeaders": {},
-          "price": {
-            "promptPricePer1k": null,
-            "completionTokenPricePer1k": null
-          }
-        }
-      },
-      {
-        "id": "wt-17508380635787usx8rZejmJPD44tFbRrX",
-        "type": "model",
-        "name": "meta/llama-3.3-70b-instruct",
-        "description": "A new model",
-        "tags": [],
-        "requirements": [],
-        "createdAt": "2025-06-25T07:54:23.578Z",
-        "updatedAt": "2025-06-25T07:54:36.135Z",
-        "data": {
-          "apiKey": "REPLACE_ME",
-          "apiType": "nim",
-          "apiVersion": null,
-          "baseUrl": null,
-          "temperature": null,
-          "topP": null,
-          "maxTokens": null,
-          "aws": {
+            "profileName": null,
             "region": null,
-            "accessKey": null,
             "secretKey": null,
-            "sessionToken": null,
-            "profileName": null
+            "sessionToken": null
           },
           "extras": {},
           "defaultHeaders": {},
@@ -671,31 +619,31 @@
     ],
     "tools": [
       {
-        "id": "wt-1750874495122d32Jr6dPQvaW_EXkVBKv0",
+        "id": "wt-17509397478638Xgajkin_rBgkwWIVzTI8",
         "type": "tool",
         "name": "record_info",
-        "description": "Get date",
+        "description": "Record the date, time and city in the workflow",
         "tags": [],
         "requirements": [],
-        "createdAt": "2025-06-25T18:01:35.122Z",
-        "updatedAt": "2025-06-25T21:07:59.169Z",
+        "createdAt": "2025-06-26T12:09:07.863Z",
+        "updatedAt": "2025-06-26T12:13:20.181Z",
         "data": {
-          "content": "# filename: {new_skill}.py\n\"\"\"Replace this with your code.\n\nmake sure a function with the same name\nas the skill is defined in the code.\n\"\"\"\nfrom autogen.agentchat.group import AgentNameTarget, ContextVariables, ReplyResult\n\ndef record_info(date: str, time: str, city: str, context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Record the date, time and city in the workflow context\"\"\"\n\n    context_variables[\"date\"] = date\n    context_variables[\"definedDate\"] = True\n    context_variables[\"time\"] = time\n    context_variables[\"definedTime\"] = True\n    context_variables[\"city\"] = city\n    context_variables[\"definedCity\"] = True\n    context_variables[\"retrievedInfo\"] = True\n    \n    return ReplyResult(\n        context_variables=context_variables,\n        message=f\"Info Recorded: {date}, {time} and {city}\",\n    )\n",
+          "content": "from autogen.agentchat.group import ContextVariables, ReplyResult\n\ndef record_info(date: str, time: str, city: str, context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Record the date, time and city in the workflow context\"\"\"\n\n    context_variables[\"date\"] = date\n    context_variables[\"definedDate\"] = True\n    context_variables[\"time\"] = time\n    context_variables[\"definedTime\"] = True\n    context_variables[\"city\"] = city\n    context_variables[\"definedCity\"] = True\n    context_variables[\"retrievedInfo\"] = True\n    \n    return ReplyResult(\n        context_variables=context_variables,\n        message=f\"Info Recorded: {date}, {time} and {city}\",\n    )\n",
           "toolType": "custom",
           "secrets": {}
         }
       },
       {
-        "id": "wt-1750877821520-QaQNsiYlFUgV4fNQ-sRK",
+        "id": "wt-1750939811519GWjKtiHyjAd0rUOtgK2f8",
         "type": "tool",
         "name": "record_temperature",
-        "description": "Retrieve temperature",
+        "description": "Record the place in the workflow context",
         "tags": [],
         "requirements": [],
-        "createdAt": "2025-06-25T18:57:01.520Z",
-        "updatedAt": "2025-06-25T21:07:36.774Z",
+        "createdAt": "2025-06-26T12:10:11.519Z",
+        "updatedAt": "2025-06-26T12:14:08.429Z",
         "data": {
-          "content": "# filename: {new_skill}.py\n\"\"\"Replace this with your code.\n\nmake sure a function with the same name\nas the skill is defined in the code.\n\"\"\"\nfrom autogen.agentchat.group import AgentNameTarget, ContextVariables, ReplyResult\nimport requests\nimport pandas as pd\nfrom datetime import timedelta\n\ndef record_temperature(context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Record the place in the workflow context\"\"\"\n\n    place = context_variables[\"city\"]\n    target_time = context_variables[\"time\"]\n    target_date_str = context_variables[\"date\"]\n\n    try:\n        # Use pandas to parse date and time flexibly\n        datetime_str = f\"{target_date_str} {target_time}\"\n        dt = pd.to_datetime(datetime_str, dayfirst=True)  # dayfirst=True handles DD/MM/YYYY\n        hour = dt.hour\n        remainder = hour % 3\n        if remainder < 1.5:\n            rounded_hour = hour - remainder\n        else:\n            rounded_hour = hour + (3 - remainder)\n            if rounded_hour >= 24:\n                dt += timedelta(days=1)\n                rounded_hour = 0\n        dt = dt.replace(hour=rounded_hour, minute=0, second=0, microsecond=0)\n        \n        # Format inputs for API\n        place = place.strip()\n        formatted_date = dt.strftime('%Y-%m-%d')\n        formatted_time = str(dt.hour * 100)\n        \n        print(f\"Searching for weather in {place} on {formatted_date} at {dt.hour:02d}:00...\")\n        \n        # Get weather data\n        response = requests.get(f\"https://wttr.in/{place}?format=j1\")\n        response.raise_for_status()\n        data = response.json()\n        \n        # Search for the target date and time\n        forecast = None\n        for day in data['weather']:\n            if day['date'] == formatted_date:\n                for slot in day['hourly']:\n                    if slot['time'] == formatted_time:\n                        forecast = slot\n                        break\n                break\n        \n        # Output result\n        if forecast:\n            temp_c = forecast['tempC']\n            feels_like = forecast['FeelsLikeC']\n            desc = forecast['weatherDesc'][0]['value']\n            print(f\"\\nWeather in {place} on {formatted_date} at {dt.hour:02d}:00:\")\n            print(f\"Temperature: {temp_c}°C, Feels like: {feels_like}°C\")\n            print(f\"Conditions: {desc}\")\n            context_variables[\"definedTemperature\"] = True\n            context_variables[\"temperature\"] = temp_c\n        else:\n            print(f\"\\nSorry, could not find the forecast for {place} on {formatted_date} at {dt.hour:02d}:00.\")\n            \n    except Exception as e:\n        print(f\"Error: {e}\")\n        print(\"Try formats like: '27/06/2025 2PM', '2025-06-27 14:00', 'June 27, 2025 2:30 PM'\")\n\n    return ReplyResult(\n            context_variables=context_variables,\n            message=f\"Temperature Recorded: {temp_c}\"\n        )\n\n\n\n",
+          "content": "from autogen.agentchat.group import ContextVariables, ReplyResult\nfrom datetime import timedelta\nimport numpy as np\nimport pandas as pd\nimport requests\n\ndef record_temperature(context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Record the place in the workflow context\"\"\"\n\n    place = context_variables[\"city\"]\n    target_time = context_variables[\"time\"]\n    target_date_str = context_variables[\"date\"]\n\n    try:\n        # Use pandas to parse date and time flexibly\n        datetime_str = f\"{target_date_str} {target_time}\"\n        dt = pd.to_datetime(datetime_str, dayfirst=True)  # dayfirst=True handles DD/MM/YYYY\n        hour = dt.hour\n        remainder = hour % 3\n        if remainder < 1.5:\n            rounded_hour = hour - remainder\n        else:\n            rounded_hour = hour + (3 - remainder)\n            if rounded_hour >= 24:\n                dt += timedelta(days=1)\n                rounded_hour = 0\n        dt = dt.replace(hour=rounded_hour, minute=0, second=0, microsecond=0)\n        \n        # Format inputs for API\n        place = place.strip()\n        formatted_date = dt.strftime('%Y-%m-%d')\n        formatted_time = str(dt.hour * 100)\n        \n        print(f\"Searching for weather in {place} on {formatted_date} at {dt.hour:02d}:00...\")\n        \n        # Get weather data\n        response = requests.get(f\"https://wttr.in/{place}?format=j1\")\n        response.raise_for_status()\n        data = response.json()\n        \n        # Search for the target date and time\n        forecast = None\n        for day in data['weather']:\n            if day['date'] == formatted_date:\n                for slot in day['hourly']:\n                    if slot['time'] == formatted_time:\n                        forecast = slot\n                        break\n                break\n        \n        # Output result\n        if forecast:\n            temp_c = forecast['tempC']\n            feels_like = forecast['FeelsLikeC']\n            desc = forecast['weatherDesc'][0]['value']\n            print(f\"\\nWeather in {place} on {formatted_date} at {dt.hour:02d}:00:\")\n            print(f\"Temperature: {temp_c}°C, Feels like: {feels_like}°C\")\n            print(f\"Conditions: {desc}\")\n            context_variables[\"definedTemperature\"] = True\n            context_variables[\"temperature\"] = temp_c\n        else:\n            print(f\"\\nSorry, could not find the forecast for {place} on {formatted_date} at {dt.hour:02d}:00.\")\n            \n    except Exception as e:\n        print(f\"Error: {e}\")\n        print(\"Try formats like: '27/06/2025 2PM', '2025-06-27 14:00', 'June 27, 2025 2:30 PM'\")\n\n    return ReplyResult(\n            context_variables=context_variables,\n            message=f\"Temperature Recorded: {temp_c}\"\n        )\n     \n",
           "toolType": "custom",
           "secrets": {}
         }
@@ -924,7 +872,6 @@
       }
     ],
     "isAsync": false,
-    "cacheSeed": 42,
     "silent": false
   }
 }
