@@ -1,7 +1,7 @@
 {
-  "id": "id-cfa60504-caac-4b11-9e98-0c1d86381cd5",
+  "id": "id-a35bab61-b042-40f6-beec-24a2d7cd924e",
   "type": "flow",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "storageId": "wf-1750765176648stPd3Agvx5FqouIKo96p2",
   "name": "Weather sightseeing",
   "description": "A group chat workflow checking whether the weather conditions are fine for visiting a specified site at a specified date. It contains an agent capable of retrieving the temperature at real-time.",
@@ -12,23 +12,35 @@
   ],
   "requirements": [],
   "createdAt": "2025-06-24T11:39:36.648Z",
-  "updatedAt": "2025-06-26T11:29:53.119Z",
+  "updatedAt": "2025-06-26T12:24:16.931Z",
   "data": {
     "nodes": [
       {
-        "id": "wt-17508843380457gAgxMDSJsPfuZ9Oz-lyr",
+        "id": "wt-17509391277268V-GFV52Gv6qubUVDQIFW",
         "type": "model",
         "position": {
-          "x": null,
-          "y": null
+          "x": 0,
+          "y": 10
         },
         "measured": {
           "width": 180,
           "height": 100
         },
         "selected": false,
-        "hidden": true,
-        "className": ""
+        "hidden": true
+      },
+      {
+        "id": "wt-1750939139362dfjV8Df0hfKVSZ-I8babh",
+        "type": "tool",
+        "position": {
+          "x": 0,
+          "y": 10
+        },
+        "measured": {
+          "width": 180,
+          "height": 100
+        },
+        "hidden": true
       },
       {
         "id": "wa-1750768072864H674JRW667rbSPKXtaiy2",
@@ -66,7 +78,7 @@
           "width": 130,
           "height": 120
         },
-        "selected": true,
+        "selected": false,
         "dragging": false,
         "className": "",
         "hidden": false
@@ -148,7 +160,7 @@
           "width": 180,
           "height": 120
         },
-        "selected": false,
+        "selected": true,
         "dragging": false,
         "className": "",
         "hidden": false,
@@ -179,9 +191,9 @@
       }
     ],
     "viewport": {
-      "x": -53.64556962025324,
-      "y": -180.4746835443038,
-      "zoom": 0.9443037974683545
+      "x": -28.86835443037978,
+      "y": -172.56202531645567,
+      "zoom": 0.9964556962025316
     },
     "agents": {
       "groupManagerAgents": [
@@ -314,7 +326,7 @@
               "methodContent": null
             },
             "modelIds": [
-              "wt-17508843380457gAgxMDSJsPfuZ9Oz-lyr"
+              "wt-17509391277268V-GFV52Gv6qubUVDQIFW"
             ],
             "tools": [],
             "parentId": "wa-1750768072864H674JRW667rbSPKXtaiy2",
@@ -354,7 +366,8 @@
             "humanInputMode": "NEVER",
             "codeExecutionConfig": {
               "workDir": "coding",
-              "timeout": 44
+              "timeout": 44,
+              "functions": []
             },
             "agentDefaultAutoReply": null,
             "maxConsecutiveAutoReply": null,
@@ -411,7 +424,7 @@
               "methodContent": null
             },
             "modelIds": [
-              "wt-17508843380457gAgxMDSJsPfuZ9Oz-lyr"
+              "wt-17509391277268V-GFV52Gv6qubUVDQIFW"
             ],
             "tools": [],
             "parentId": "wa-1750768072864H674JRW667rbSPKXtaiy2",
@@ -459,7 +472,7 @@
               "methodContent": null
             },
             "modelIds": [
-              "wt-17508843380457gAgxMDSJsPfuZ9Oz-lyr"
+              "wt-17509391277268V-GFV52Gv6qubUVDQIFW"
             ],
             "tools": [],
             "parentId": "wa-1750768072864H674JRW667rbSPKXtaiy2",
@@ -493,14 +506,14 @@
     },
     "models": [
       {
-        "id": "wt-17508843380457gAgxMDSJsPfuZ9Oz-lyr",
+        "id": "wt-17509391277268V-GFV52Gv6qubUVDQIFW",
         "type": "model",
         "name": "gpt-4.1",
         "description": "A new model",
         "tags": [],
         "requirements": [],
-        "createdAt": "2025-06-25T20:45:38.045Z",
-        "updatedAt": "2025-06-25T20:46:26.854Z",
+        "createdAt": "2025-06-26T11:58:47.726Z",
+        "updatedAt": "2025-06-26T12:23:52.055Z",
         "data": {
           "apiKey": "REPLACE_ME",
           "apiType": "openai",
@@ -525,7 +538,23 @@
         }
       }
     ],
-    "tools": [],
+    "tools": [
+      {
+        "id": "wt-1750939139362dfjV8Df0hfKVSZ-I8babh",
+        "type": "tool",
+        "name": "new_tool",
+        "description": "A new tool",
+        "tags": [],
+        "requirements": [],
+        "createdAt": "2025-06-26T11:58:59.362Z",
+        "updatedAt": "2025-06-26T11:58:59.362Z",
+        "data": {
+          "content": "\n\"\"\"Replace this with your code.\n\nmake sure a function with the same name\nas the tool is defined in the code.\n\"\"\"\n\n# Example:\n# tool name: 'new_tool'\n#\n# def new_tool() -> str:\n#     \"\"\"Tool entry point.\"\"\"\n#     return \"Hello, world!\"\n#\n# Add your code below\n\ndef new_tool() -> None:\n    \"\"\"Tool entry point.\"\"\"\n    ...\n",
+          "toolType": "custom",
+          "secrets": {}
+        }
+      }
+    ],
     "chats": [
       {
         "id": "wc-1750768798196-w1Jg4C8CxWJ-5O8beM-c",
