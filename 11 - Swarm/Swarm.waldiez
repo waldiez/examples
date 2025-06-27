@@ -871,7 +871,8 @@
         "data": {
           "content": "# Databases\n\nUSER_DATABASE = {\n    \"mark\": {\n        \"full_name\": \"Mark Sze\",\n    },\n    \"kevin\": {\n        \"full_name\": \"Yiran Wu\",\n    },\n}\n\nORDER_DATABASE = {\n    \"TR13845\": {\n        \"user\": \"mark\",\n        \"order_number\": \"TR13845\",\n        \"status\": \"shipped\",  # order status: order_received, shipped, delivered, return_started, returned\n        \"return_status\": \"N/A\",  # return status: N/A, return_started, return_shipped, return_delivered, refund_issued\n        \"product\": \"matress\",\n        \"link\": \"https://www.example.com/TR13845\",\n        \"shipping_address\": \"123 Main St, State College, PA 12345\",\n    },\n    \"TR14234\": {\n        \"user\": \"kevin\",\n        \"order_number\": \"TR14234\",\n        \"status\": \"delivered\",\n        \"return_status\": \"N/A\",\n        \"product\": \"pillow\",\n        \"link\": \"https://www.example.com/TR14234\",\n        \"shipping_address\": \"123 Main St, State College, PA 12345\",\n    },\n    \"TR29384\": {\n        \"user\": \"mark\",\n        \"order_number\": \"TR29384\",\n        \"status\": \"delivered\",\n        \"return_status\": \"N/A\",\n        \"product\": \"bed frame\",\n        \"link\": \"https://www.example.com/TR29384\",\n        \"shipping_address\": \"123 Main St, State College, PA 12345\",\n    },\n}\n",
           "toolType": "shared",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       },
       {
@@ -886,7 +887,8 @@
         "data": {
           "content": "# filename: {new_skill}.py\n\"\"\"Replace this with your code.\n\nmake sure a function with the same name\nas the skill is defined in the code.\n\"\"\"\nfrom autogen.agentchat.group import AgentNameTarget, ContextVariables, ReplyResult\n\ndef record_order_id(order_id: str, context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Record the order ID in the workflow context\"\"\"\n    target = AgentNameTarget(\"order_triage_agent\")\n    if order_id not in ORDER_DATABASE:\n        return ReplyResult(\n            target=target,\n            context_variables=context_variables,\n            message=f\"Order ID {order_id} not found. Please ask for the correct order ID.\",\n        )\n\n    context_variables[\"order_id\"] = order_id\n    context_variables[\"has_order_id\"] = True\n    return ReplyResult(\n        target=target,\n        context_variables=context_variables,\n        message=f\"Order ID Recorded: {order_id}\",\n    )\n",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       },
       {
@@ -901,7 +903,8 @@
         "data": {
           "content": "# filename: {new_skill}.py\n\"\"\"Replace this with your code.\n\nmake sure a function with the same name\nas the skill is defined in the code.\n\"\"\"\n\nfrom autogen.agentchat.group import AgentNameTarget, ContextVariables, ReplyResult\n\n\ndef check_order_id(order_id: str, context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Check if the order ID is valid\"\"\"\n    target=AgentNameTarget(\"order_triage_agent\")\n    # Restricts order to checking to the logged in user\n    if (\n        context_variables[\"logged_in_username\"]\n        and order_id in ORDER_DATABASE\n        and ORDER_DATABASE[order_id][\"user\"] == context_variables[\"logged_in_username\"]\n    ):\n        return ReplyResult(\n            target=target,\n            context_variables=context_variables,\n            message=f\"Order ID {order_id} is valid.\",\n        )\n    return ReplyResult(\n        target=target,\n        context_variables=context_variables,\n        message=f\"Order ID {order_id} is invalid. Please ask for the correct order ID.\",\n    )",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       },
       {
@@ -916,7 +919,8 @@
         "data": {
           "content": "# filename: {new_skill}.py\n\"\"\"Replace this with your code.\n\nmake sure a function with the same name\nas the skill is defined in the code.\n\"\"\"\nfrom autogen.agentchat.group import AgentNameTarget, ContextVariables, ReplyResult\n\ndef login_customer_by_username(username: str, context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Get and log the customer in by their username\"\"\"\n    target = AgentNameTarget(\"authentication_agent\")\n    if username in USER_DATABASE:\n        context_variables[\"customer_name\"] = USER_DATABASE[username][\"full_name\"]\n        context_variables[\"logged_in_username\"] = username\n        context_variables[\"logged_in\"] = True\n        context_variables[\"requires_login\"] = False\n        return ReplyResult(\n            context_variables=context_variables,\n            message=f\"Welcome back our customer, {context_variables['customer_name']}! Please continue helping them.\",\n        )\n    return ReplyResult(\n        target=target,\n        context_variables=context_variables,\n        message=f\"User {username} not found. Please ask for the correct username.\",\n    )",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       }
     ],

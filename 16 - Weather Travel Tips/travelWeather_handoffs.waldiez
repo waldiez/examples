@@ -1,7 +1,7 @@
 {
   "id": "id-8a2fe765-8a83-4cc8-ac84-741b8368e30d",
   "type": "flow",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "storageId": "wf-1750765176648stPd3Agvx5FqouIKo96p2",
   "name": "Weather sightseeing recommendation",
   "description": "A group chat workflow checking whether the weather conditions are fine for visiting a specified site at a specified date. It contains an agent using tool to retrieve the temperature at real-time. The communication within the agents is achieved using handoffs.",
@@ -15,6 +15,48 @@
   "updatedAt": "2025-06-26T12:16:06.277Z",
   "data": {
     "nodes": [
+      {
+        "id": "wt-1750939868113HQlXK8cc9PPOtaXnBIpOs",
+        "type": "model",
+        "position": {
+          "x": 0,
+          "y": 10
+        },
+        "measured": {
+          "width": 180,
+          "height": 100
+        },
+        "selected": false,
+        "hidden": true
+      },
+      {
+        "id": "wt-17509397478638Xgajkin_rBgkwWIVzTI8",
+        "type": "tool",
+        "position": {
+          "x": 0,
+          "y": 10
+        },
+        "measured": {
+          "width": 180,
+          "height": 100
+        },
+        "selected": false,
+        "hidden": false
+      },
+      {
+        "id": "wt-1750939811519GWjKtiHyjAd0rUOtgK2f8",
+        "type": "tool",
+        "position": {
+          "x": 200,
+          "y": 10
+        },
+        "measured": {
+          "width": 180,
+          "height": 100
+        },
+        "selected": false,
+        "hidden": false
+      },
       {
         "id": "wa-1750768072864H674JRW667rbSPKXtaiy2",
         "type": "agent",
@@ -118,48 +160,6 @@
         "className": "",
         "hidden": true,
         "parentId": "wa-1750768072864H674JRW667rbSPKXtaiy2"
-      },
-      {
-        "id": "wt-17509397478638Xgajkin_rBgkwWIVzTI8",
-        "type": "tool",
-        "position": {
-          "x": 0,
-          "y": 10
-        },
-        "measured": {
-          "width": 180,
-          "height": 100
-        },
-        "selected": false,
-        "hidden": false
-      },
-      {
-        "id": "wt-1750939811519GWjKtiHyjAd0rUOtgK2f8",
-        "type": "tool",
-        "position": {
-          "x": 200,
-          "y": 10
-        },
-        "measured": {
-          "width": 180,
-          "height": 100
-        },
-        "selected": false,
-        "hidden": false
-      },
-      {
-        "id": "wt-1750939868113HQlXK8cc9PPOtaXnBIpOs",
-        "type": "model",
-        "position": {
-          "x": 0,
-          "y": 10
-        },
-        "measured": {
-          "width": 180,
-          "height": 100
-        },
-        "selected": false,
-        "hidden": true
       }
     ],
     "edges": [
@@ -602,11 +602,11 @@
           "topP": null,
           "maxTokens": null,
           "aws": {
-            "accessKey": null,
-            "profileName": null,
             "region": null,
+            "accessKey": null,
             "secretKey": null,
-            "sessionToken": null
+            "sessionToken": null,
+            "profileName": null
           },
           "extras": {},
           "defaultHeaders": {},
@@ -630,7 +630,8 @@
         "data": {
           "content": "from autogen.agentchat.group import ContextVariables, ReplyResult\n\ndef record_info(date: str, time: str, city: str, context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Record the date, time and city in the workflow context\"\"\"\n\n    context_variables[\"date\"] = date\n    context_variables[\"definedDate\"] = True\n    context_variables[\"time\"] = time\n    context_variables[\"definedTime\"] = True\n    context_variables[\"city\"] = city\n    context_variables[\"definedCity\"] = True\n    context_variables[\"retrievedInfo\"] = True\n    \n    return ReplyResult(\n        context_variables=context_variables,\n        message=f\"Info Recorded: {date}, {time} and {city}\",\n    )\n",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       },
       {
@@ -645,7 +646,8 @@
         "data": {
           "content": "from autogen.agentchat.group import ContextVariables, ReplyResult\nfrom datetime import timedelta\nimport numpy as np\nimport pandas as pd\nimport requests\n\ndef record_temperature(context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Record the place in the workflow context\"\"\"\n\n    place = context_variables[\"city\"]\n    target_time = context_variables[\"time\"]\n    target_date_str = context_variables[\"date\"]\n\n    try:\n        # Use pandas to parse date and time flexibly\n        datetime_str = f\"{target_date_str} {target_time}\"\n        dt = pd.to_datetime(datetime_str, dayfirst=True)  # dayfirst=True handles DD/MM/YYYY\n        hour = dt.hour\n        remainder = hour % 3\n        if remainder < 1.5:\n            rounded_hour = hour - remainder\n        else:\n            rounded_hour = hour + (3 - remainder)\n            if rounded_hour >= 24:\n                dt += timedelta(days=1)\n                rounded_hour = 0\n        dt = dt.replace(hour=rounded_hour, minute=0, second=0, microsecond=0)\n        \n        # Format inputs for API\n        place = place.strip()\n        formatted_date = dt.strftime('%Y-%m-%d')\n        formatted_time = str(dt.hour * 100)\n        \n        print(f\"Searching for weather in {place} on {formatted_date} at {dt.hour:02d}:00...\")\n        \n        # Get weather data\n        response = requests.get(f\"https://wttr.in/{place}?format=j1\")\n        response.raise_for_status()\n        data = response.json()\n        \n        # Search for the target date and time\n        forecast = None\n        for day in data['weather']:\n            if day['date'] == formatted_date:\n                for slot in day['hourly']:\n                    if slot['time'] == formatted_time:\n                        forecast = slot\n                        break\n                break\n        \n        # Output result\n        if forecast:\n            temp_c = forecast['tempC']\n            feels_like = forecast['FeelsLikeC']\n            desc = forecast['weatherDesc'][0]['value']\n            print(f\"\\nWeather in {place} on {formatted_date} at {dt.hour:02d}:00:\")\n            print(f\"Temperature: {temp_c}°C, Feels like: {feels_like}°C\")\n            print(f\"Conditions: {desc}\")\n            context_variables[\"definedTemperature\"] = True\n            context_variables[\"temperature\"] = temp_c\n        else:\n            print(f\"\\nSorry, could not find the forecast for {place} on {formatted_date} at {dt.hour:02d}:00.\")\n            \n    except Exception as e:\n        print(f\"Error: {e}\")\n        print(\"Try formats like: '27/06/2025 2PM', '2025-06-27 14:00', 'June 27, 2025 2:30 PM'\")\n\n    return ReplyResult(\n            context_variables=context_variables,\n            message=f\"Temperature Recorded: {temp_c}\"\n        )\n     \n",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       }
     ],
@@ -872,6 +874,7 @@
       }
     ],
     "isAsync": false,
+    "cacheSeed": null,
     "silent": false
   }
 }

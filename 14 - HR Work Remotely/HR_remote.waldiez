@@ -828,7 +828,8 @@
         "data": {
           "content": "# Databases\nUSER_DATABASE = {\n    \"istella\": {\n        \"full_name\": \"Stella Ioannidou\",\n        \"department\": \"HR\",\n    },\n    \"laztoum\": {\n        \"full_name\": \"Lazaros Toumanidis\",\n        \"department\": \"RnD\",\n    },\n}\nDEPARTMENT_DATABASE = {\n    \"HR\": {\n        \"manager\": \"Styliani Ioannidou\",\n        \"manager_email\":\"manager_1@example.com\",\"max_remote_days\": 4,\n        \"dep_address\": \"23 Kifisias St, Athens, PA 12345\",\n    },\n    \"RnD\": {\n        \"manager\": \"Panagiotis Kasnesis\",\n        \"manager_email\": \"manager_1@example.com\",\"max_remote_days\": 10,\n         \"dep_address\": \"56 Ermou St, Athens, PA 12346\",\n    },\n}",
           "toolType": "shared",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       },
       {
@@ -843,7 +844,8 @@
         "data": {
           "content": "def remote_days(days: str, context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Record the number of remote days in the workflow context\"\"\"\n    context_variables[\"remote_days\"] = days\n    context_variables[\"has_defined_days\"] = True\n    return ReplyResult(\n        context_variables=context_variables,\n        message=f\"Number of remote days recorded: {days}\",\n    )",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       },
       {
@@ -858,7 +860,8 @@
         "data": {
           "content": "from autogen.agentchat.group import ContextVariables, ReplyResult\n\ndef login_by_username(username: str, context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Get and log the employee in by their username\"\"\"\n    if username in USER_DATABASE:\n        department_name = USER_DATABASE[username][\"department\"]\n        context_variables[\"user_name\"] = USER_DATABASE[username][\"full_name\"]\n        context_variables[\"department\"] = department_name\n        department = DEPARTMENT_DATABASE[department_name]\n        context_variables[\"logged_in_username\"] = username\n        context_variables[\"logged_in\"] = True\n        context_variables[\"requires_login\"] = False\n        context_variables[\"defined_department\"] = True\n        context_variables[\"manager_name\"] = department['manager']\n        context_variables[\"manager_email\"] = department['manager_email']\n        context_variables[\"max_remote_days\"] = department[\"max_remote_days\"]\n        return ReplyResult(\n            context_variables=context_variables,\n            message=\"The user is authenticated, continue\",\n        )\n    return ReplyResult(\n        context_variables=context_variables,\n        message=f\"User {username} not found. Please ask for the correct username.\",\n    )",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       },
       {
@@ -873,7 +876,8 @@
         "data": {
           "content": "def check_remote_policy(remote_days: int, context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Check if the order ID is valid\"\"\"\n    # Restricts order to checking to the logged in user\n    if context_variables[\"logged_in_username\"] and context_variables[\"defined_department\"]:\n        department = context_variables[\"department\"]\n        if DEPARTMENT_DATABASE[department][\"max_remote_days\"] >= remote_days:\n            context_variables[\"days_approved\"]=True\n            return ReplyResult(\n                    context_variables=context_variables,\n                     message=f\"Requested remote dates are approved.\")\n    return ReplyResult(\n        context_variables=context_variables,\n        message=f\"The number {remote_days} of requested remote days is not compliant with your departments policy. Please ask for less or ask to notify your manager.\"\n    )",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       },
       {
@@ -888,7 +892,8 @@
         "data": {
           "content": "def wants_to_notify(notify_manager: str, context_variables: ContextVariables) -> ReplyResult:\n    \"\"\"Check if the users wants to notify the department's manager.\"\"\"\n    if context_variables[\"logged_in_username\"] and notify_manager:\n        context_variables[\"notify_manager\"]=True\n        manager_name=context_variables[\"manager_name\"]\n        manager_email=context_variables[\"manager_email\"]\n        return ReplyResult(\n            context_variables=context_variables,\n            message=f\"An email will be sent to your manager {manager_name} with email {manager_email}\")\n    return ReplyResult(\n        context_variables=context_variables,\n        message=\"The user doesn't want to notify the manager\",\n    )",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       },
       {
@@ -905,7 +910,8 @@
         "data": {
           "content": "import os\nimport base64\nfrom email.mime.text import MIMEText\nfrom googleapiclient.discovery import build\nfrom google_auth_oauthlib.flow import InstalledAppFlow\nfrom google.auth.transport.requests import Request\nfrom google.oauth2.credentials import Credentials\nfrom typing import Optional, Any\n\ndef gmail_send_function(\n    message_text: str,\n    recipient_email: str,\n    context_variables: ContextVariables,\n    subject: str = \"\",\n    sender_email: str = \"me\") -> ReplyResult:\n    \"\"\"Send an email using Gmail API.\n\n    Args:\n        message_text (str): The body of the email\n        recipient_email (str): Email address of the recipient\n        subject (str, optional): Subject of the email. Defaults to \"\".\n        sender_email (str, optional): Email address of sender. Defaults to \"me\".\n    Returns:\n        str: A message indicating success or failure\n    \"\"\"\n    try:\n        # Gmail API setup directly within the function\n        SCOPES = [\n            'https://mail.google.com/',  # Full access to Gmail account\n            'https://www.googleapis.com/auth/gmail.send',  # Send-only access\\\n        ]\n\n        creds = None\n        # Try to load existing credentials if available\n        token_path = 'token.json'\n        # Check if token.json exists and contains valid credentials\n        if os.path.exists(token_path):\n            try:\n                with open(token_path, 'r') as token_file:\n                    token_data = json.load(token_file)\n                creds = Credentials.from_authorized_user_info(token_data, SCOPES)\n            except Exception as e:\n                print(f\"Error loading token file: {str(e)}\")\n       \n        # Check if credentials need to be refreshed or created\n        if not creds or not creds.valid:\n            if creds and creds.expired and creds.refresh_token:\n                # Just refresh the token if possible\n                creds.refresh(Request())\n                print(\"Refreshed existing credentials\")\n            else:\n                # Only trigger OAuth flow if we have no valid credentials\n                print(\"No valid credentials found, starting OAuth flow...\")\n                flow = InstalledAppFlow.from_client_secrets_file(\n                    'C:/Users/pathToFile/credentials.json',\n                    SCOPES\n                )\n                creds = flow.run_local_server(port=0)\n                print(\"Successfully authenticated with Gmail API\")\n           \n            # Save the credentials for future runs\n            with open(token_path, 'w') as token:\n                token.write(creds.to_json())\n                print(f\"Saved credentials to {token_path}\")\n        else:\n            print(\"Using existing valid credentials\")\n       \n        # Build the service\n        service = build('gmail', 'v1', credentials=creds)\n       \n        # Create a more complete message\n        message = MIMEText(message_text)\n        message['to'] = recipient_email\n        message['subject'] = subject\n\n        # Encode the message\n        encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()\n\n        # Create the message body\n        create_message = {\n            'raw': encoded_message\n        }\n\n        # Send the message\n        send_message = service.users().messages().send(\n            userId=sender_email,\n            body=create_message\n        ).execute()\n        context_variables['email_sent'] = True\n        return ReplyResult(\n            context_variables=context_variables,\n            message=f\"Email sent successfully to {recipient_email} with message ID: {send_message['id']}\"\n        )\n    except Exception as e:\n        # More verbose error handling\n        return ReplyResult(\n            context_variables=context_variables,\n            message=(\n                f\"Error sending email: {str(e)}\"\n                \"Make sure your Google Cloud Project has Gmail API enabled and the credentials.json file is configured correctly.\"\n            )\n        )\n",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       }
     ],

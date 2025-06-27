@@ -359,7 +359,8 @@
           "secrets": {
             "gpt-4o": "REPLACE_ME",
             "RAPID_API_KEY": "REPLACE_ME"
-          }
+          },
+          "kwargs": {}
         }
       }
     ],

@@ -17,6 +17,20 @@
   "data": {
     "nodes": [
       {
+        "id": "wt-1750940876900KDhGxKOv8Vy8dNDH3ydI_",
+        "type": "model",
+        "position": {
+          "x": 0,
+          "y": 10
+        },
+        "measured": {
+          "width": 180,
+          "height": 100
+        },
+        "selected": false,
+        "hidden": true
+      },
+      {
         "id": "wa-1750886778071sx8LwK3oRwHY0YJ7xQ4SE",
         "type": "agent",
         "style": {
@@ -53,20 +67,6 @@
         "dragging": false,
         "className": "",
         "hidden": false
-      },
-      {
-        "id": "wt-1750940876900KDhGxKOv8Vy8dNDH3ydI_",
-        "type": "model",
-        "position": {
-          "x": 0,
-          "y": 10
-        },
-        "measured": {
-          "width": 180,
-          "height": 100
-        },
-        "selected": false,
-        "hidden": true
       }
     ],
     "edges": [
@@ -219,11 +219,11 @@
           "topP": null,
           "maxTokens": null,
           "aws": {
-            "accessKey": null,
-            "profileName": null,
             "region": null,
+            "accessKey": null,
             "secretKey": null,
-            "sessionToken": null
+            "sessionToken": null,
+            "profileName": null
           },
           "extras": {},
           "defaultHeaders": {},
@@ -282,6 +282,7 @@
       }
     ],
     "isAsync": false,
+    "cacheSeed": null,
     "silent": false
   }
 }

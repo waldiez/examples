@@ -551,7 +551,8 @@
         "data": {
           "content": "\n\"\"\"Replace this with your code.\n\nmake sure a function with the same name\nas the tool is defined in the code.\n\"\"\"\n\n# Example:\n# tool name: 'new_tool'\n#\n# def new_tool() -> str:\n#     \"\"\"Tool entry point.\"\"\"\n#     return \"Hello, world!\"\n#\n# Add your code below\n\ndef new_tool() -> None:\n    \"\"\"Tool entry point.\"\"\"\n    ...\n",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       }
     ],
@@ -602,6 +603,7 @@
       }
     ],
     "isAsync": false,
+    "cacheSeed": null,
     "silent": false
   }
 }

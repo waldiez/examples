@@ -269,7 +269,8 @@
           "toolType": "custom",
           "secrets": {
             "TAVILY_API_KEY": "REPLACE_ME"
-          }
+          },
+          "kwargs": {}
         }
       }
     ],

@@ -433,7 +433,8 @@
         "data": {
           "content": "from typing_extensions import Annotated\n\ndef get_papers(\n    search_query: str,\n    max_results: int\n) -> Annotated[str, \"list of papers\"]:\n    \"\"\"return list of papers based on the user topic.\n    Args:\n        search_query (str): Name of topic of interest (e.g., 'agents')\n        max_results (int): number of papers returned.\n    \"\"\"\n    import arxiv\n\n    results = []\n    # Search for recent papers on the topic\n    search = arxiv.Search(\n        query=search_query,\n        max_results=max_results,\n        sort_by=arxiv.SortCriterion.SubmittedDate,\n        sort_order=arxiv.SortOrder.Descending\n    )\n    # Retrieve and print the paper details\n    for result in search.results():\n        print(f\"Title: {result.title}\")\n        print(f\"Authors: {', '.join(author.name for author in result.authors)}\")\n        print(f\"Published: {result.published}\")\n        print(f\"Summary: {result.summary}\")\n        print(f\"PDF URL: {result.pdf_url}\")\n        results.append(result.summary)\n    return results\n",
           "toolType": "custom",
-          "secrets": {}
+          "secrets": {},
+          "kwargs": {}
         }
       }
     ],
