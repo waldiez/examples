@@ -17,7 +17,7 @@
 
 ReAct using Tavily
 
-Requirements: ag2[anthropic]==0.9.3, ag2[openai]==0.9.3, tavily-python
+Requirements: ag2[anthropic]==0.9.4, ag2[openai]==0.9.4, tavily-python
 Tags: ReAct, Tavily
 🧩 generated with ❤️ by Waldiez.
 """
