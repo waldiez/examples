@@ -17,7 +17,7 @@
 
 A workflow containing a single agent capable of understanding images, writing code and providing tips for the weather.
 
-Requirements: ag2[lmm]==0.9.3, ag2[openai]==0.9.3
+Requirements: ag2[lmm]==0.9.4, ag2[openai]==0.9.4
 Tags: Multimodal, Weather, Travel, Code
 🧩 generated with ❤️ by Waldiez.
 """
@@ -37,10 +37,21 @@ from types import ModuleType
 from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import autogen  # type: ignore
-from autogen import Agent, Cache, ChatResult, ConversableAgent, GroupChat, UserProxyAgent, runtime_logging
-from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
+from autogen import (
+    Agent,
+    Cache,
+    ChatResult,
+    ConversableAgent,
+    GroupChat,
+    UserProxyAgent,
+    runtime_logging,
+)
+from autogen.agentchat.contrib.multimodal_conversable_agent import (
+    MultimodalConversableAgent,
+)
 from autogen.coding import LocalCommandLineCodeExecutor
 import numpy as np
+
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"
@@ -63,9 +74,11 @@ if not hasattr(np, "_no_pep50_warning"):
             Nothing.
         """
         yield
+
     setattr(np, "_no_pep50_warning", _np_no_nep50_warning)  # noqa
 
 # Start logging.
+
 
 def start_logging() -> None:
     """Start logging."""
@@ -105,6 +118,7 @@ def load_api_key_module(flow_name: str) -> ModuleType:
         return importlib.reload(sys.modules[module_name])
     return importlib.import_module(module_name)
 
+
 __MODELS_MODULE__ = load_api_key_module("weather_tips_agent")
 
 
@@ -128,7 +142,7 @@ def get_weather_tips_agent_model_api_key(model_name: str) -> str:
 gpt_4_1_llm_config: dict[str, Any] = {
     "model": "gpt-4.1",
     "api_type": "openai",
-    "api_key": get_weather_tips_agent_model_api_key("gpt_4_1")
+    "api_key": get_weather_tips_agent_model_api_key("gpt_4_1"),
 }
 
 # Agents
@@ -150,7 +164,7 @@ assistant = MultimodalConversableAgent(
         config_list=[
             gpt_4_1_llm_config,
         ],
-        cache_seed=42,
+        cache_seed=None,
     ),
 )
 
@@ -164,6 +178,7 @@ user = UserProxyAgent(
     is_termination_msg=None,  # pyright: ignore
     llm_config=False,  # pyright: ignore
 )
+
 
 def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     """Convert a sqlite table to csv and json files.
@@ -196,6 +211,7 @@ def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     with open(json_file, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
+
 def stop_logging() -> None:
     """Stop logging."""
     runtime_logging.stop()
@@ -214,8 +230,8 @@ def stop_logging() -> None:
         get_sqlite_out("flow.db", table, dest)
 
 
-
 # Start chatting
+
 
 def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
     """Start chatting.
@@ -226,15 +242,13 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
     """
-    with Cache.disk(cache_seed=42) as cache:  # pyright: ignore
-        results = user.initiate_chat(
-            assistant,
-            cache=cache,
-            summary_method="last_msg",
-            clear_history=True,
-        )
+    results = user.initiate_chat(
+        assistant,
+        summary_method="last_msg",
+        clear_history=True,
+    )
 
-        stop_logging()
+    stop_logging()
     return results
 
 

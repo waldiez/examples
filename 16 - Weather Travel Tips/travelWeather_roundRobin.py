@@ -17,7 +17,7 @@
 
 A group chat workflow checking whether the weather conditions are fine for visiting a specified site at a specified date. It contains an agent capable of retrieving the temperature at real-time.
 
-Requirements: ag2[lmm]==0.9.3, ag2[openai]==0.9.3
+Requirements: ag2[lmm]==0.9.4, ag2[openai]==0.9.4
 Tags: Weather, Travel, Group
 🧩 generated with ❤️ by Waldiez.
 """
@@ -37,13 +37,24 @@ from types import ModuleType
 from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import autogen  # type: ignore
-from autogen import Agent, Cache, ChatResult, ConversableAgent, GroupChat, UserProxyAgent, runtime_logging
+from autogen import (
+    Agent,
+    Cache,
+    ChatResult,
+    ConversableAgent,
+    GroupChat,
+    UserProxyAgent,
+    runtime_logging,
+)
 from autogen.agentchat import GroupChatManager, initiate_group_chat
-from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
+from autogen.agentchat.contrib.multimodal_conversable_agent import (
+    MultimodalConversableAgent,
+)
 from autogen.agentchat.group import ContextVariables
 from autogen.agentchat.group.patterns import RoundRobinPattern
 from autogen.coding import LocalCommandLineCodeExecutor
 import numpy as np
+
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"
@@ -66,9 +77,11 @@ if not hasattr(np, "_no_pep50_warning"):
             Nothing.
         """
         yield
+
     setattr(np, "_no_pep50_warning", _np_no_nep50_warning)  # noqa
 
 # Start logging.
+
 
 def start_logging() -> None:
     """Start logging."""
@@ -108,6 +121,7 @@ def load_api_key_module(flow_name: str) -> ModuleType:
         return importlib.reload(sys.modules[module_name])
     return importlib.import_module(module_name)
 
+
 __MODELS_MODULE__ = load_api_key_module("weather_sightseeing")
 
 
@@ -126,12 +140,29 @@ def get_weather_sightseeing_model_api_key(model_name: str) -> str:
     return __MODELS_MODULE__.get_weather_sightseeing_model_api_key(model_name)
 
 
+# Tools
+
+# Example:
+# tool name: 'new_tool'
+#
+# def new_tool() -> str:
+#     """Tool entry point."""
+#     return "Hello, world!"
+#
+# Add your code below
+
+
+def new_tool() -> None:
+    """Tool entry point."""
+    ...
+
+
 # Models
 
 gpt_4_1_llm_config: dict[str, Any] = {
     "model": "gpt-4.1",
     "api_type": "openai",
-    "api_key": get_weather_sightseeing_model_api_key("gpt_4_1")
+    "api_key": get_weather_sightseeing_model_api_key("gpt_4_1"),
 }
 
 # Agents
@@ -156,7 +187,7 @@ engineer_agent = ConversableAgent(
         config_list=[
             gpt_4_1_llm_config,
         ],
-        cache_seed=42,
+        cache_seed=None,
     ),
 )
 
@@ -188,7 +219,7 @@ safety_agent = ConversableAgent(
         config_list=[
             gpt_4_1_llm_config,
         ],
-        cache_seed=42,
+        cache_seed=None,
     ),
 )
 
@@ -218,7 +249,7 @@ weather_agent = MultimodalConversableAgent(
         config_list=[
             gpt_4_1_llm_config,
         ],
-        cache_seed=42,
+        cache_seed=None,
     ),
 )
 
@@ -226,10 +257,9 @@ manager_pattern = RoundRobinPattern(
     initial_agent=weather_agent,
     agents=[weather_agent, engineer_agent, executor, safety_agent],
     user_agent=user,
-    group_manager_args={
-        "llm_config": False
-    },
+    group_manager_args={"llm_config": False},
 )
+
 
 def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     """Convert a sqlite table to csv and json files.
@@ -262,6 +292,7 @@ def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     with open(json_file, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
+
 def stop_logging() -> None:
     """Stop logging."""
     runtime_logging.stop()
@@ -280,8 +311,8 @@ def stop_logging() -> None:
         get_sqlite_out("flow.db", table, dest)
 
 
-
 # Start chatting
+
 
 def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
     """Start chatting.
@@ -292,14 +323,13 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
     """
-    with Cache.disk(cache_seed=42) as cache:  # pyright: ignore
-        results, _, __ = initiate_group_chat(
-            pattern=manager_pattern,
-            messages="I want to go to Acropolis tomorrow at 3PM",
-            max_rounds=20,
-        )
+    results, _, __ = initiate_group_chat(
+        pattern=manager_pattern,
+        messages="I want to go to Acropolis tomorrow at 3PM",
+        max_rounds=20,
+    )
 
-        stop_logging()
+    stop_logging()
     return results
 
 

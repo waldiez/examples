@@ -17,7 +17,7 @@
 
 A group chat workflow checking whether the weather conditions are fine for visiting a specified site at a specified date. It contains an agent using tool to retrieve the temperature at real-time. The communication within the agents is achieved using handoffs.
 
-Requirements: ag2[openai]==0.9.3
+Requirements: ag2[openai]==0.9.4
 Tags: Weather, Travel, Group
 🧩 generated with ❤️ by Waldiez.
 """
@@ -38,14 +38,34 @@ from types import ModuleType
 from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import autogen  # type: ignore
-from autogen import Agent, Cache, ChatResult, ConversableAgent, GroupChat, UpdateSystemMessage, UserProxyAgent, register_function, runtime_logging
+from autogen import (
+    Agent,
+    Cache,
+    ChatResult,
+    ConversableAgent,
+    GroupChat,
+    UpdateSystemMessage,
+    UserProxyAgent,
+    register_function,
+    runtime_logging,
+)
 from autogen.agentchat import GroupChatManager, initiate_group_chat
-from autogen.agentchat.group import AgentNameTarget, AgentTarget, ContextVariables, OnCondition, OnContextCondition, ReplyResult, RevertToUserTarget, StringContextCondition, StringLLMCondition
+from autogen.agentchat.group import (
+    AgentTarget,
+    ContextVariables,
+    OnCondition,
+    OnContextCondition,
+    ReplyResult,
+    RevertToUserTarget,
+    StringContextCondition,
+    StringLLMCondition,
+)
 from autogen.agentchat.group.patterns import DefaultPattern
 from autogen.coding import LocalCommandLineCodeExecutor
 import numpy as np
 import pandas as pd
 import requests
+
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"
@@ -68,9 +88,11 @@ if not hasattr(np, "_no_pep50_warning"):
             Nothing.
         """
         yield
+
     setattr(np, "_no_pep50_warning", _np_no_nep50_warning)  # noqa
 
 # Start logging.
+
 
 def start_logging() -> None:
     """Start logging."""
@@ -110,6 +132,7 @@ def load_api_key_module(flow_name: str) -> ModuleType:
         return importlib.reload(sys.modules[module_name])
     return importlib.import_module(module_name)
 
+
 __MODELS_MODULE__ = load_api_key_module("weather_sightseeing")
 
 
@@ -130,7 +153,10 @@ def get_weather_sightseeing_model_api_key(model_name: str) -> str:
 
 # Tools
 
-def record_info(date: str, time: str, city: str, context_variables: ContextVariables) -> ReplyResult:
+
+def record_info(
+    date: str, time: str, city: str, context_variables: ContextVariables
+) -> ReplyResult:
     """Record the date, time and city in the workflow context"""
 
     context_variables["date"] = date
@@ -140,11 +166,12 @@ def record_info(date: str, time: str, city: str, context_variables: ContextVaria
     context_variables["city"] = city
     context_variables["definedCity"] = True
     context_variables["retrievedInfo"] = True
-    
+
     return ReplyResult(
         context_variables=context_variables,
         message=f"Info Recorded: {date}, {time} and {city}",
     )
+
 
 def record_temperature(context_variables: ContextVariables) -> ReplyResult:
     """Record the place in the workflow context"""
@@ -156,7 +183,9 @@ def record_temperature(context_variables: ContextVariables) -> ReplyResult:
     try:
         # Use pandas to parse date and time flexibly
         datetime_str = f"{target_date_str} {target_time}"
-        dt = pd.to_datetime(datetime_str, dayfirst=True)  # dayfirst=True handles DD/MM/YYYY
+        dt = pd.to_datetime(
+            datetime_str, dayfirst=True
+        )  # dayfirst=True handles DD/MM/YYYY
         hour = dt.hour
         remainder = hour % 3
         if remainder < 1.5:
@@ -167,63 +196,63 @@ def record_temperature(context_variables: ContextVariables) -> ReplyResult:
                 dt += timedelta(days=1)
                 rounded_hour = 0
         dt = dt.replace(hour=rounded_hour, minute=0, second=0, microsecond=0)
-        
+
         # Format inputs for API
         place = place.strip()
-        formatted_date = dt.strftime('%Y-%m-%d')
+        formatted_date = dt.strftime("%Y-%m-%d")
         formatted_time = str(dt.hour * 100)
-        
-        print(f"Searching for weather in {place} on {formatted_date} at {dt.hour:02d}:00...")
-        
+
+        print(
+            f"Searching for weather in {place} on {formatted_date} at {dt.hour:02d}:00..."
+        )
+
         # Get weather data
         response = requests.get(f"https://wttr.in/{place}?format=j1")
         response.raise_for_status()
         data = response.json()
-        
+
         # Search for the target date and time
         forecast = None
-        for day in data['weather']:
-            if day['date'] == formatted_date:
-                for slot in day['hourly']:
-                    if slot['time'] == formatted_time:
+        for day in data["weather"]:
+            if day["date"] == formatted_date:
+                for slot in day["hourly"]:
+                    if slot["time"] == formatted_time:
                         forecast = slot
                         break
                 break
-        
+
         # Output result
         if forecast:
-            temp_c = forecast['tempC']
-            feels_like = forecast['FeelsLikeC']
-            desc = forecast['weatherDesc'][0]['value']
+            temp_c = forecast["tempC"]
+            feels_like = forecast["FeelsLikeC"]
+            desc = forecast["weatherDesc"][0]["value"]
             print(f"\nWeather in {place} on {formatted_date} at {dt.hour:02d}:00:")
             print(f"Temperature: {temp_c}°C, Feels like: {feels_like}°C")
             print(f"Conditions: {desc}")
             context_variables["definedTemperature"] = True
             context_variables["temperature"] = temp_c
         else:
-            print(f"\nSorry, could not find the forecast for {place} on {formatted_date} at {dt.hour:02d}:00.")
-            
+            print(
+                f"\nSorry, could not find the forecast for {place} on {formatted_date} at {dt.hour:02d}:00."
+            )
+
     except Exception as e:
         print(f"Error: {e}")
-        print("Try formats like: '27/06/2025 2PM', '2025-06-27 14:00', 'June 27, 2025 2:30 PM'")
+        print(
+            "Try formats like: '27/06/2025 2PM', '2025-06-27 14:00', 'June 27, 2025 2:30 PM'"
+        )
 
     return ReplyResult(
-            context_variables=context_variables,
-            message=f"Temperature Recorded: {temp_c}"
-        )
+        context_variables=context_variables, message=f"Temperature Recorded: {temp_c}"
+    )
+
 
 # Models
 
 gpt_4_1_llm_config: dict[str, Any] = {
     "model": "gpt-4.1",
     "api_type": "openai",
-    "api_key": get_weather_sightseeing_model_api_key("gpt_4_1")
-}
-
-meta_llama_3_3_70b_instruct_llm_config: dict[str, Any] = {
-    "model": "meta/llama-3.3-70b-instruct",
-    "base_url": "https://integrate.api.nvidia.com/v1",
-    "api_key": get_weather_sightseeing_model_api_key("meta_llama_3_3_70b_instruct")
+    "api_key": get_weather_sightseeing_model_api_key("gpt_4_1"),
 }
 
 # Agents
@@ -250,7 +279,7 @@ info_agent = ConversableAgent(
         config_list=[
             gpt_4_1_llm_config,
         ],
-        cache_seed=42,
+        cache_seed=None,
     ),
 )
 
@@ -264,13 +293,15 @@ triage_agent = ConversableAgent(
     is_termination_msg=None,  # pyright: ignore
     functions=[],
     update_agent_state_before_reply=[
-        UpdateSystemMessage("You are an order triage agent, working with a user and a group of agents to provide support for your weather tips.\n Give the speech to Info_Agent if the user hasn't defined a place.\nThe Weather_Agent will retrieve all weather related tasks. \nYou will manage all weather optimization task related tasks. Be sure to the temperature value first. Then if it's valid you can record it in the context.\n\nAsk the user for further information when necessary.\n\nThe current status of this workflow is:\nCity of interest: {city}\nCity defined: {definedCity}\nTime: {time}\nTime defined: {definedTime}\nDate: {date}\nTemperature: {temperature}"),
+        UpdateSystemMessage(
+            "You are an order triage agent, working with a user and a group of agents to provide support for your weather tips.\n Give the speech to Info_Agent if the user hasn't defined a place.\nThe Weather_Agent will retrieve all weather related tasks. \nYou will manage all weather optimization task related tasks. Be sure to the temperature value first. Then if it's valid you can record it in the context.\n\nAsk the user for further information when necessary.\n\nThe current status of this workflow is:\nCity of interest: {city}\nCity defined: {definedCity}\nTime: {time}\nTime defined: {definedTime}\nDate: {date}\nTemperature: {temperature}"
+        ),
     ],
     llm_config=autogen.LLMConfig(
         config_list=[
             gpt_4_1_llm_config,
         ],
-        cache_seed=42,
+        cache_seed=None,
     ),
 )
 
@@ -297,13 +328,15 @@ weather_agent = ConversableAgent(
         record_temperature,
     ],
     update_agent_state_before_reply=[
-        UpdateSystemMessage("You are a weather agent, get temperature data. Check weather the temperature values are safe for the user.\nReturn to the triage_agent if temp is retrieved. \n"),
+        UpdateSystemMessage(
+            "You are a weather agent, get temperature data. Check weather the temperature values are safe for the user.\nReturn to the triage_agent if temp is retrieved. \n"
+        ),
     ],
     llm_config=autogen.LLMConfig(
         config_list=[
             gpt_4_1_llm_config,
         ],
-        cache_seed=42,
+        cache_seed=None,
     ),
 )
 
@@ -313,14 +346,14 @@ info_agent.handoffs.add_llm_condition(
         condition=StringLLMCondition(prompt="The info have been retrieved"),
     )
 )
-info_agent.handoffs.set_after_work(
-    target=RevertToUserTarget()
-)
+info_agent.handoffs.set_after_work(target=RevertToUserTarget())
 
 triage_agent.handoffs.add_llm_condition(
     condition=OnCondition(
         target=AgentTarget(info_agent),
-        condition=StringLLMCondition(prompt="The user hasn't defined a city, ask for the place of interest"),
+        condition=StringLLMCondition(
+            prompt="The user hasn't defined a city, ask for the place of interest"
+        ),
     )
 )
 triage_agent.handoffs.add_llm_condition(
@@ -329,9 +362,7 @@ triage_agent.handoffs.add_llm_condition(
         condition=StringLLMCondition(prompt="Temperature has not been retrieved"),
     )
 )
-triage_agent.handoffs.set_after_work(
-    target=RevertToUserTarget()
-)
+triage_agent.handoffs.set_after_work(target=RevertToUserTarget())
 
 weather_agent.handoffs.add_context_condition(
     condition=OnContextCondition(
@@ -339,35 +370,29 @@ weather_agent.handoffs.add_context_condition(
         condition=StringContextCondition(variable_name="{definedTemperature}"),
     )
 )
-weather_agent.handoffs.set_after_work(
-    target=AgentTarget(triage_agent)
-)
+weather_agent.handoffs.set_after_work(target=AgentTarget(triage_agent))
 
 manager_pattern = DefaultPattern(
     initial_agent=triage_agent,
     agents=[weather_agent, info_agent, triage_agent],
     user_agent=user,
-    group_manager_args={
-        "llm_config": autogen.LLMConfig(
-            config_list=[
-                gpt_4_1_llm_config,
-            ],
-            cache_seed=None,
-        ),
-    },
-    context_variables=ContextVariables(data={
-        "timestamp": None,
-        "temperature": None,
-        "city": None,
-        "definedCity": False,
-        "date": None,
-        "definedTime": False,
-        "definedDate": False,
-        "time": None,
-        "retrievedInfo": False,
-        "definedTemperature": False,
-    }),
+    group_manager_args={"llm_config": False},
+    context_variables=ContextVariables(
+        data={
+            "timestamp": None,
+            "temperature": None,
+            "city": None,
+            "definedCity": False,
+            "date": None,
+            "definedTime": False,
+            "definedDate": False,
+            "time": None,
+            "retrievedInfo": False,
+            "definedTemperature": False,
+        }
+    ),
 )
+
 
 def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     """Convert a sqlite table to csv and json files.
@@ -400,6 +425,7 @@ def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     with open(json_file, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
+
 def stop_logging() -> None:
     """Stop logging."""
     runtime_logging.stop()
@@ -418,8 +444,8 @@ def stop_logging() -> None:
         get_sqlite_out("flow.db", table, dest)
 
 
-
 # Start chatting
+
 
 def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
     """Start chatting.
@@ -430,14 +456,13 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
     """
-    with Cache.disk(cache_seed=42) as cache:  # pyright: ignore
-        results, _, __ = initiate_group_chat(
-            pattern=manager_pattern,
-            messages="Hi I want to visit a place",
-            max_rounds=40,
-        )
+    results, _, __ = initiate_group_chat(
+        pattern=manager_pattern,
+        messages="Hi I want to visit a place",
+        max_rounds=40,
+    )
 
-        stop_logging()
+    stop_logging()
     return results
 
 
