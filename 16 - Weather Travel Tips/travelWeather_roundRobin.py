@@ -17,7 +17,7 @@
 
 A group chat workflow checking whether the weather conditions are fine for visiting a specified site at a specified date. It contains an agent capable of retrieving the temperature at real-time.
 
-Requirements: ag2[lmm]==0.9.4, ag2[openai]==0.9.4
+Requirements: ag2[lmm]==0.9.5, ag2[openai]==0.9.5
 Tags: Weather, Travel, Group
 🧩 generated with ❤️ by Waldiez.
 """

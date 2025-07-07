@@ -17,7 +17,7 @@
 
 Group Chat with Retrieval Augmented Generation.
 
-Requirements: ag2[openai]==0.9.4, beautifulsoup4, chromadb>=0.5.23, ipython, markdownify, protobuf==5.29.3, pypdf, sentence_transformers
+Requirements: ag2[openai]==0.9.5, beautifulsoup4, chromadb>=0.5.23, ipython, markdownify, protobuf==5.29.3, pypdf, sentence_transformers
 Tags: RAG, FLAML
 🧩 generated with ❤️ by Waldiez.
 """
@@ -290,11 +290,11 @@ def callable_message_boss_assistant_to_manager(
     recipient: ConversableAgent,
     context: dict[str, Any],
 ) -> Union[dict[str, Any], str]:
-    """Get the message to send using the last carryover.
+    """Get the message using the RAG message generator method.
 
     Parameters
     ----------
-    sender : ConversableAgent
+    sender : RetrieveUserProxyAgent
         The source agent.
     recipient : ConversableAgent
         The target agent.
@@ -316,7 +316,10 @@ def callable_message_boss_assistant_to_manager(
             carryover = carryover.get("content", "")
     if not isinstance(carryover, str):
         carryover = ""
-    return carryover
+    message = sender.message_generator(sender, recipient, context)
+    if carryover:
+        message += carryover
+    return message
 
 
 manager = GroupChatManager(

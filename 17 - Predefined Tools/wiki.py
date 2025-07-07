@@ -17,7 +17,7 @@
 
 A example waldiez flow using wiki search
 
-Requirements: ag2[openai]==0.9.4, ag2[wikipedia, openai]
+Requirements: ag2[openai]==0.9.5, ag2[wikipedia, openai]
 Tags: wikipedia
 🧩 generated with ❤️ by Waldiez.
 """

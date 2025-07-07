@@ -17,7 +17,7 @@
 
 Multi-Agent LLM Defense against Jailbreak Attacks
 
-Requirements: ag2[openai]==0.9.4
+Requirements: ag2[openai]==0.9.5
 Tags: AutoDefense, Jailbreak
 🧩 generated with ❤️ by Waldiez.
 """

@@ -17,7 +17,7 @@
 
 A example waldiez flow using tavily search
 
-Requirements: ag2[openai]==0.9.4, ag2[tavily, openai]
+Requirements: ag2[openai]==0.9.5, ag2[tavily, openai]
 Tags: websearch
 🧩 generated with ❤️ by Waldiez.
 """
