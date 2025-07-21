@@ -17,7 +17,7 @@
 
 A group chat workflow checking whether the weather conditions are fine for visiting a specified site at a specified date. It contains an agent capable of retrieving the temperature at real-time.
 
-Requirements: ag2[lmm]==0.9.5, ag2[openai]==0.9.5
+Requirements: ag2[lmm]==0.9.6, ag2[openai]==0.9.6
 Tags: Weather, Travel, Group
 🧩 generated with ❤️ by Waldiez.
 """
@@ -34,7 +34,18 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    Coroutine,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 import autogen  # type: ignore
 from autogen import (
@@ -46,13 +57,15 @@ from autogen import (
     UserProxyAgent,
     runtime_logging,
 )
-from autogen.agentchat import GroupChatManager, initiate_group_chat
+from autogen.agentchat import GroupChatManager, run_group_chat
 from autogen.agentchat.contrib.multimodal_conversable_agent import (
     MultimodalConversableAgent,
 )
 from autogen.agentchat.group import ContextVariables
 from autogen.agentchat.group.patterns import RoundRobinPattern
 from autogen.coding import LocalCommandLineCodeExecutor
+from autogen.events import BaseEvent
+from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtocol
 import numpy as np
 
 #
@@ -314,20 +327,43 @@ def stop_logging() -> None:
 # Start chatting
 
 
-def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
+def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> RunResponseProtocol:
     """Start chatting.
 
     Returns
     -------
-    Union[ChatResult, list[ChatResult], dict[int, ChatResult]]
+    RunResponseProtocol
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
+
+    Raises
+    ------
+    RuntimeError
+        If the chat session fails.
     """
-    results, _, __ = initiate_group_chat(
+    results = run_group_chat(
         pattern=manager_pattern,
         messages="I want to go to Acropolis tomorrow at 3PM",
         max_rounds=20,
     )
+    if on_event:
+        if not isinstance(results, list):
+            results = [results]
+        for index, result in enumerate(results):
+            for event in result.events:
+                try:
+                    should_continue = on_event(event)
+                except Exception as e:
+                    raise RuntimeError("Error in event handler: " + str(e)) from e
+                if event.type == "run_completion":
+                    should_continue = False
+                if not should_continue:
+                    break
+    else:
+        if not isinstance(results, list):
+            results = [results]
+        for result in results:
+            result.process()
 
     stop_logging()
     return results
@@ -335,17 +371,27 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
 
 def call_main() -> None:
     """Run the main function and print the results."""
-    results: Union[ChatResult, list[ChatResult], dict[int, ChatResult]] = main()
-    if isinstance(results, dict):
-        # order by key
-        ordered_results = dict(sorted(results.items()))
-        for _, result in ordered_results.items():
-            pprint(asdict(result))
-    else:
-        if not isinstance(results, list):
-            results = [results]
-        for result in results:
-            pprint(asdict(result))
+    results: list[RunResponseProtocol] = main()
+    results_dicts: list[dict[str, Any]] = []
+    for result in results:
+        result_summary = result.summary
+        result_messages = result.messages
+        result_cost = result.cost
+        cost: dict[str, Any] | None = None
+        if result_cost:
+            cost = result_cost.model_dump(mode="json", fallback=str)
+        results_dicts.append(
+            {
+                "summary": result_summary,
+                "messages": result_messages,
+                "cost": cost,
+            }
+        )
+
+    results_dict = {
+        "results": results_dicts,
+    }
+    print(json.dumps(results_dict, indent=2))
 
 
 if __name__ == "__main__":

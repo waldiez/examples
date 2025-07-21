@@ -17,7 +17,7 @@
 
 Async version of Sequential Chats and Customer Onboarding
 
-Requirements: ag2[anthropic]==0.9.5, ag2[openai]==0.9.5
+Requirements: ag2[anthropic]==0.9.6, ag2[openai]==0.9.6
 Tags: Sequential, Customer, On-boarding, Onboarding
 🧩 generated with ❤️ by Waldiez.
 """
@@ -34,7 +34,18 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    Coroutine,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 import aiofiles
 import aiosqlite
@@ -53,7 +64,8 @@ from autogen import (
     UserProxyAgent,
     runtime_logging,
 )
-from autogen.agentchat.chat import a_initiate_chats
+from autogen.events import BaseEvent
+from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtocol
 import numpy as np
 
 # pylint: disable=broad-exception-caught
@@ -306,19 +318,25 @@ async def stop_logging() -> None:
 # Start chatting
 
 
-async def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
+async def main(
+    on_event: Optional[Callable[[BaseEvent], Coroutine[None, None, bool]]] = None,
+) -> AsyncRunResponseProtocol:
     """Start chatting.
 
     Returns
     -------
-    Union[ChatResult, list[ChatResult], dict[int, ChatResult]]
+    AsyncRunResponseProtocol
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
+
+    Raises
+    ------
+    RuntimeError
+        If the chat session fails.
     """
-    results = await a_initiate_chats(
+    results = await personal_information_agent.a_sequential_run(
         [
             {
-                "sender": personal_information_agent,
                 "recipient": customer_proxy,
                 "summary_method": "reflection_with_llm",
                 "summary_args": {
@@ -356,6 +374,24 @@ async def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
             },
         ]
     )
+    if on_event:
+        if not isinstance(results, list):
+            results = [results]
+        for index, result in enumerate(results):
+            async for event in result.events:
+                try:
+                    should_continue = await on_event(event)
+                except Exception as e:
+                    raise RuntimeError("Error in event handler: " + str(e)) from e
+                if event.type == "run_completion":
+                    should_continue = False
+                if not should_continue:
+                    break
+    else:
+        if not isinstance(results, list):
+            results = [results]
+        for result in results:
+            await result.process()
 
     await stop_logging()
     return results
@@ -363,17 +399,27 @@ async def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
 
 async def call_main() -> None:
     """Run the main function and print the results."""
-    results: Union[ChatResult, list[ChatResult], dict[int, ChatResult]] = await main()
-    if isinstance(results, dict):
-        # order by key
-        ordered_results = dict(sorted(results.items()))
-        for _, result in ordered_results.items():
-            pprint(asdict(result))
-    else:
-        if not isinstance(results, list):
-            results = [results]
-        for result in results:
-            pprint(asdict(result))
+    results: list[AsyncRunResponseProtocol] = await main()
+    results_dicts: list[dict[str, Any]] = []
+    for result in results:
+        result_summary = await result.summary
+        result_messages = await result.messages
+        result_cost = await result.cost
+        cost: dict[str, Any] | None = None
+        if result_cost:
+            cost = result_cost.model_dump(mode="json", fallback=str)
+        results_dicts.append(
+            {
+                "summary": result_summary,
+                "messages": result_messages,
+                "cost": cost,
+            }
+        )
+
+    results_dict = {
+        "results": results_dicts,
+    }
+    print(json.dumps(results_dict, indent=2))
 
 
 if __name__ == "__main__":

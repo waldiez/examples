@@ -17,7 +17,7 @@
 
 A example waldiez flow using YouTube search
 
-Requirements: ag2[google-search, openai], ag2[openai]==0.9.5
+Requirements: ag2[google-search, openai], ag2[openai]==0.9.6
 Tags: youtube
 🧩 generated with ❤️ by Waldiez.
 """
@@ -34,7 +34,18 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    Coroutine,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 import autogen  # type: ignore
 from autogen import (
@@ -48,6 +59,8 @@ from autogen import (
     register_function,
     runtime_logging,
 )
+from autogen.events import BaseEvent
+from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtocol
 from autogen.tools.experimental import YoutubeSearchTool
 import numpy as np
 
@@ -169,12 +182,40 @@ def load_tool_secrets_module(flow_name: str, tool_name: str) -> ModuleType:
 
 load_tool_secrets_module("youtube_search_waldi", "youtube_search")
 
-youtube_api_key = os.environ.get("YOUTUBE_API_KEY", "")
-if not youtube_api_key:
-    raise ValueError("YOUTUBE_API_KEY is required for YouTube search tool.")
-youtube_search = YoutubeSearchTool(
-    youtube_api_key=youtube_api_key,
-)
+
+def youtube_search(
+    query: str,
+    youtube_api_key: str = os.environ.get("YOUTUBE_API_KEY", ""),
+    max_results: int = 5,
+    include_video_details: bool = True,
+) -> list[dict[str, Any]]:
+    """Perform a YouTube search and return formatted results.
+
+    Args:
+        query: The search query string.
+        youtube_api_key: The API key for the YouTube Data API.
+        max_results: The maximum number of results to return. Defaults to 5.
+        include_video_details: Whether to include detailed video information. Defaults to True.
+
+    Returns:
+        A list of dictionaries of the search results.
+
+    Raises:
+        ValueError: If YOUTUBE_API_KEY is not set or if the search fails.
+    """
+    youtube_api_key = os.environ.get("YOUTUBE_API_KEY", "")
+    if not youtube_api_key:
+        raise ValueError("YOUTUBE_API_KEY is required for YouTube search tool.")
+    youtube_search_tool = YoutubeSearchTool(
+        youtube_api_key=youtube_api_key,
+    )
+    return youtube_search_tool(
+        query=query,
+        youtube_api_key=youtube_api_key,
+        max_results=max_results,
+        include_video_details=include_video_details,
+    )
+
 
 # Models
 
@@ -275,17 +316,22 @@ def stop_logging() -> None:
 # Start chatting
 
 
-def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
+def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> RunResponseProtocol:
     """Start chatting.
 
     Returns
     -------
-    Union[ChatResult, list[ChatResult], dict[int, ChatResult]]
+    RunResponseProtocol
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
+
+    Raises
+    ------
+    RuntimeError
+        If the chat session fails.
     """
     with Cache.disk(cache_seed=42) as cache:  # pyright: ignore
-        results = user.initiate_chat(
+        results = user.run(
             assistant,
             cache=cache,
             summary_method="last_msg",
@@ -293,6 +339,24 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
             clear_history=True,
             message="Let's find a video with instructions about creating workflows with waldiez",
         )
+        if on_event:
+            if not isinstance(results, list):
+                results = [results]
+            for index, result in enumerate(results):
+                for event in result.events:
+                    try:
+                        should_continue = on_event(event)
+                    except Exception as e:
+                        raise RuntimeError("Error in event handler: " + str(e)) from e
+                    if event.type == "run_completion":
+                        should_continue = False
+                    if not should_continue:
+                        break
+        else:
+            if not isinstance(results, list):
+                results = [results]
+            for result in results:
+                result.process()
 
         stop_logging()
     return results
@@ -300,17 +364,27 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
 
 def call_main() -> None:
     """Run the main function and print the results."""
-    results: Union[ChatResult, list[ChatResult], dict[int, ChatResult]] = main()
-    if isinstance(results, dict):
-        # order by key
-        ordered_results = dict(sorted(results.items()))
-        for _, result in ordered_results.items():
-            pprint(asdict(result))
-    else:
-        if not isinstance(results, list):
-            results = [results]
-        for result in results:
-            pprint(asdict(result))
+    results: list[RunResponseProtocol] = main()
+    results_dicts: list[dict[str, Any]] = []
+    for result in results:
+        result_summary = result.summary
+        result_messages = result.messages
+        result_cost = result.cost
+        cost: dict[str, Any] | None = None
+        if result_cost:
+            cost = result_cost.model_dump(mode="json", fallback=str)
+        results_dicts.append(
+            {
+                "summary": result_summary,
+                "messages": result_messages,
+                "cost": cost,
+            }
+        )
+
+    results_dict = {
+        "results": results_dicts,
+    }
+    print(json.dumps(results_dict, indent=2))
 
 
 if __name__ == "__main__":

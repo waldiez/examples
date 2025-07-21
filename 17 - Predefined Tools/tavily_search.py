@@ -17,7 +17,7 @@
 
 A example waldiez flow using tavily search
 
-Requirements: ag2[openai]==0.9.5, ag2[tavily, openai]
+Requirements: ag2[openai]==0.9.6, ag2[tavily, openai]
 Tags: websearch
 🧩 generated with ❤️ by Waldiez.
 """
@@ -34,7 +34,18 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    Coroutine,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 import autogen  # type: ignore
 from autogen import (
@@ -48,6 +59,8 @@ from autogen import (
     register_function,
     runtime_logging,
 )
+from autogen.events import BaseEvent
+from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtocol
 from autogen.tools.experimental import TavilySearchTool
 import numpy as np
 
@@ -169,12 +182,51 @@ def load_tool_secrets_module(flow_name: str, tool_name: str) -> ModuleType:
 
 load_tool_secrets_module("a_example_waldiez_fl", "tavily_search")
 
-tavily_api_key = os.environ.get("TAVILY_API_KEY", "")
-if not tavily_api_key:
-    raise ValueError("TAVILY_API_KEY is required for Tavily search tool.")
-tavily_search = TavilySearchTool(
-    tavily_api_key=tavily_api_key,
-)
+
+def tavily_search(
+    query: str,
+    tavily_api_key: str = os.environ.get("TAVILY_API_KEY", ""),
+    search_depth: str = "basic",
+    topic: str = "general",
+    include_answer: str = "basic",
+    include_raw_content: bool = False,
+    include_domains: list[str] = [],
+    num_results: int = 5,
+) -> list[dict[str, Any]]:
+    """Performs a search using the Tavily API and returns formatted results.
+
+    Args:
+        query: The search query string.
+        tavily_api_key: The API key for Tavily (injected dependency).
+        search_depth: The depth of the search ('basic' or 'advanced'). Defaults to "basic".
+        include_answer: Whether to include an AI-generated answer ('basic' or 'advanced'). Defaults to "basic".
+        include_raw_content: Whether to include raw content in the results. Defaults to False.
+        include_domains: A list of domains to include in the search. Defaults to [].
+        num_results: The maximum number of results to return. Defaults to 5.
+
+    Returns:
+        A list of dictionaries, each containing 'title', 'link', and 'snippet' of a search result.
+
+    Raises:
+        ValueError: If the Tavily API key is not available.
+    """
+    tavily_api_key = os.environ.get("TAVILY_API_KEY", "")
+    if not tavily_api_key:
+        raise ValueError("TAVILY_API_KEY is required for Tavily search tool.")
+    tavily_search_tool = TavilySearchTool(
+        tavily_api_key=tavily_api_key,
+    )
+    return tavily_search_tool(
+        query=query,
+        tavily_api_key=tavily_api_key,
+        search_depth=search_depth,
+        topic=topic,
+        include_answer=include_answer,
+        include_raw_content=include_raw_content,
+        include_domains=include_domains,
+        num_results=num_results,
+    )
+
 
 # Models
 
@@ -275,17 +327,22 @@ def stop_logging() -> None:
 # Start chatting
 
 
-def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
+def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> RunResponseProtocol:
     """Start chatting.
 
     Returns
     -------
-    Union[ChatResult, list[ChatResult], dict[int, ChatResult]]
+    RunResponseProtocol
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
+
+    Raises
+    ------
+    RuntimeError
+        If the chat session fails.
     """
     with Cache.disk(cache_seed=42) as cache:  # pyright: ignore
-        results = user.initiate_chat(
+        results = user.run(
             assistant,
             cache=cache,
             summary_method="last_msg",
@@ -293,6 +350,24 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
             clear_history=True,
             message="Who won the nba title in 2025?",
         )
+        if on_event:
+            if not isinstance(results, list):
+                results = [results]
+            for index, result in enumerate(results):
+                for event in result.events:
+                    try:
+                        should_continue = on_event(event)
+                    except Exception as e:
+                        raise RuntimeError("Error in event handler: " + str(e)) from e
+                    if event.type == "run_completion":
+                        should_continue = False
+                    if not should_continue:
+                        break
+        else:
+            if not isinstance(results, list):
+                results = [results]
+            for result in results:
+                result.process()
 
         stop_logging()
     return results
@@ -300,17 +375,27 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
 
 def call_main() -> None:
     """Run the main function and print the results."""
-    results: Union[ChatResult, list[ChatResult], dict[int, ChatResult]] = main()
-    if isinstance(results, dict):
-        # order by key
-        ordered_results = dict(sorted(results.items()))
-        for _, result in ordered_results.items():
-            pprint(asdict(result))
-    else:
-        if not isinstance(results, list):
-            results = [results]
-        for result in results:
-            pprint(asdict(result))
+    results: list[RunResponseProtocol] = main()
+    results_dicts: list[dict[str, Any]] = []
+    for result in results:
+        result_summary = result.summary
+        result_messages = result.messages
+        result_cost = result.cost
+        cost: dict[str, Any] | None = None
+        if result_cost:
+            cost = result_cost.model_dump(mode="json", fallback=str)
+        results_dicts.append(
+            {
+                "summary": result_summary,
+                "messages": result_messages,
+                "cost": cost,
+            }
+        )
+
+    results_dict = {
+        "results": results_dicts,
+    }
+    print(json.dumps(results_dict, indent=2))
 
 
 if __name__ == "__main__":

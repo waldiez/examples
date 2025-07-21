@@ -13,12 +13,12 @@
 # pyright: reportUnknownMemberType=false,reportUnknownLambdaType=false,reportUnnecessaryIsInstance=false
 # pyright: reportUnknownVariableType=false
 
-"""A example waldiez flow using tavily search.
+"""Wikipedia search Flow.
 
-A example waldiez flow using tavily search
+A example waldiez flow using wiki search
 
-Requirements: ag2[openai]==0.9.5, ag2[tavily, openai]
-Tags: websearch
+Requirements: ag2[openai]==0.9.6, ag2[wikipedia, openai]
+Tags: wikipedia
 🧩 generated with ❤️ by Waldiez.
 """
 
@@ -34,7 +34,18 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import Annotated, Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    Coroutine,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 import autogen  # type: ignore
 from autogen import (
@@ -48,7 +59,9 @@ from autogen import (
     register_function,
     runtime_logging,
 )
-from autogen.tools.experimental import TavilySearchTool
+from autogen.events import BaseEvent
+from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtocol
+from autogen.tools.experimental import WikipediaPageLoadTool, WikipediaQueryRunTool
 import numpy as np
 
 #
@@ -91,7 +104,7 @@ start_logging()
 
 # Load model API keys
 # NOTE:
-# This section assumes that a file named "a_example_waldiez_fl_api_keys"
+# This section assumes that a file named "wikipedia_search_flo_api_keys"
 # exists in the same directory as this file.
 # This file contains the API keys for the models used in this flow.
 # It should be .gitignored and not shared publicly.
@@ -118,10 +131,10 @@ def load_api_key_module(flow_name: str) -> ModuleType:
     return importlib.import_module(module_name)
 
 
-__MODELS_MODULE__ = load_api_key_module("a_example_waldiez_fl")
+__MODELS_MODULE__ = load_api_key_module("wikipedia_search_flo")
 
 
-def get_a_example_waldiez_fl_model_api_key(model_name: str) -> str:
+def get_wikipedia_search_flo_model_api_key(model_name: str) -> str:
     """Get the model api key.
     Parameters
     ----------
@@ -133,55 +146,42 @@ def get_a_example_waldiez_fl_model_api_key(model_name: str) -> str:
     str
         The model api key.
     """
-    return __MODELS_MODULE__.get_a_example_waldiez_fl_model_api_key(model_name)
+    return __MODELS_MODULE__.get_wikipedia_search_flo_model_api_key(model_name)
 
 
 # Tools
 
-# Load tool secrets module if needed
-# NOTE:
-# This section assumes that a file named "a_example_waldiez_fl_tavily_search_secrets"
-# exists in the same directory as this file.
-# This file contains the secrets for the tool used in this flow.
-# It should be .gitignored and not shared publicly.
-# If this file is not present, you can either create it manually
-# or change the way secrets are loaded in the flow.
 
+def wikipedia_search(
+    query: str, language: str = "en", top_k: int = 3, verbose: bool = False
+) -> Union[list[str], str]:
+    """Search Wikipedia for a given query and return results.
 
-def load_tool_secrets_module(flow_name: str, tool_name: str) -> ModuleType:
-    """Load the tool secrets module for the given flow name and tool name.
-
-    Parameters
-    ----------
-    flow_name : str
-        The flow name.
+    Args:
+        query: The search query string.
+        language: The language to search in (default: "en").
+        top_k: The number of top results to return (default: 3).
+        verbose: Whether to include additional information in the results (default: False).
 
     Returns
     -------
-    ModuleType
-        The loaded module.
+        Union[list[str], str]: A list of search results or a message if no results found.
     """
-    module_name = f"{flow_name}_{tool_name}_secrets"
-    if module_name in sys.modules:
-        return importlib.reload(sys.modules[module_name])
-    return importlib.import_module(module_name)
+    tool = WikipediaQueryRunTool(
+        language="en",
+        top_k=3,
+        verbose=False,
+    )
 
+    return tool(query=query)
 
-load_tool_secrets_module("a_example_waldiez_fl", "tavily_search")
-
-tavily_api_key = os.environ.get("TAVILY_API_KEY", "")
-if not tavily_api_key:
-    raise ValueError("TAVILY_API_KEY is required for Tavily search tool.")
-tavily_search = TavilySearchTool(
-    tavily_api_key=tavily_api_key,
-)
 
 # Models
 
 gpt_4_1_llm_config: dict[str, Any] = {
     "model": "gpt-4.1",
     "api_type": "openai",
-    "api_key": get_a_example_waldiez_fl_model_api_key("gpt_4_1"),
+    "api_key": get_wikipedia_search_flo_model_api_key("gpt_4_1"),
 }
 
 # Agents
@@ -214,11 +214,11 @@ user = UserProxyAgent(
 )
 
 register_function(
-    tavily_search,
+    wikipedia_search,
     caller=assistant,
     executor=user,
-    name="tavily_search",
-    description="Search Tavily for a given query.",
+    name="wikipedia_search",
+    description="Search Wikipedia for a given query.",
 )
 
 
@@ -275,24 +275,46 @@ def stop_logging() -> None:
 # Start chatting
 
 
-def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
+def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> RunResponseProtocol:
     """Start chatting.
 
     Returns
     -------
-    Union[ChatResult, list[ChatResult], dict[int, ChatResult]]
+    RunResponseProtocol
         The result of the chat session, which can be a single ChatResult,
         a list of ChatResults, or a dictionary mapping integers to ChatResults.
+
+    Raises
+    ------
+    RuntimeError
+        If the chat session fails.
     """
     with Cache.disk(cache_seed=42) as cache:  # pyright: ignore
-        results = user.initiate_chat(
+        results = user.run(
             assistant,
             cache=cache,
             summary_method="last_msg",
-            max_turns=4,
             clear_history=True,
-            message="Who won the nba title in 2025?",
+            message="Give me information about Petroupolis, Athens, Greece.",
         )
+        if on_event:
+            if not isinstance(results, list):
+                results = [results]
+            for index, result in enumerate(results):
+                for event in result.events:
+                    try:
+                        should_continue = on_event(event)
+                    except Exception as e:
+                        raise RuntimeError("Error in event handler: " + str(e)) from e
+                    if event.type == "run_completion":
+                        should_continue = False
+                    if not should_continue:
+                        break
+        else:
+            if not isinstance(results, list):
+                results = [results]
+            for result in results:
+                result.process()
 
         stop_logging()
     return results
@@ -300,17 +322,27 @@ def main() -> Union[ChatResult, list[ChatResult], dict[int, ChatResult]]:
 
 def call_main() -> None:
     """Run the main function and print the results."""
-    results: Union[ChatResult, list[ChatResult], dict[int, ChatResult]] = main()
-    if isinstance(results, dict):
-        # order by key
-        ordered_results = dict(sorted(results.items()))
-        for _, result in ordered_results.items():
-            pprint(asdict(result))
-    else:
-        if not isinstance(results, list):
-            results = [results]
-        for result in results:
-            pprint(asdict(result))
+    results: list[RunResponseProtocol] = main()
+    results_dicts: list[dict[str, Any]] = []
+    for result in results:
+        result_summary = result.summary
+        result_messages = result.messages
+        result_cost = result.cost
+        cost: dict[str, Any] | None = None
+        if result_cost:
+            cost = result_cost.model_dump(mode="json", fallback=str)
+        results_dicts.append(
+            {
+                "summary": result_summary,
+                "messages": result_messages,
+                "cost": cost,
+            }
+        )
+
+    results_dict = {
+        "results": results_dicts,
+    }
+    print(json.dumps(results_dict, indent=2))
 
 
 if __name__ == "__main__":

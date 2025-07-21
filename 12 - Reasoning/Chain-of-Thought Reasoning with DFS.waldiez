@@ -202,7 +202,8 @@
           "agentType": "reasoning"
         }
       ],
-      "captainAgents": []
+      "captainAgents": [],
+      "docAgents": []
     },
     "models": [
       {

@@ -492,7 +492,8 @@
       ],
       "ragUserProxyAgents": [],
       "reasoningAgents": [],
-      "captainAgents": []
+      "captainAgents": [],
+      "docAgents": []
     },
     "models": [
       {
