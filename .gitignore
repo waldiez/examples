@@ -7,3 +7,5 @@
 **/*_api_keys.py
 **/*_secrets.py
 dev/
+waldiez_out/
+.ipynb_checkpoints/
