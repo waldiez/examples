@@ -17,7 +17,7 @@
 
 Async version of Sequential Chats and Customer Onboarding
 
-Requirements: ag2[anthropic]==0.9.6, ag2[openai]==0.9.6
+Requirements: ag2[anthropic]==0.9.7, ag2[openai]==0.9.7
 Tags: Sequential, Customer, On-boarding, Onboarding
 🧩 generated with ❤️ by Waldiez.
 """
@@ -73,6 +73,9 @@ try:
     nest_asyncio.apply()  # pyright: ignore
 except BaseException:
     pass  # maybe on uvloop?
+# Common environment variable setup for Waldiez flows
+os.environ["AUTOGEN_USE_DOCKER"] = "0"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"

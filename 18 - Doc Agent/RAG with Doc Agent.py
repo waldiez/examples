@@ -17,7 +17,7 @@
 
 Retrieval Augmented Generation using a Doc agent. Based on <https://docs.ag2.ai/latest/docs/user-guide/reference-agents/docagent/#example>
 
-Requirements: ag2[openai]==0.9.6, ag2[rag]==0.9.6, llama-index, llama-index-core, llama-index-llms-openai
+Requirements: ag2[openai]==0.9.7, ag2[rag]==0.9.7, llama-index, llama-index-core, llama-index-llms-openai
 Tags: RAG, Doc Agent
 🧩 generated with ❤️ by Waldiez.
 """
@@ -66,6 +66,9 @@ from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtoco
 import numpy as np
 from llama_index.llms.openai import OpenAI
 
+# Common environment variable setup for Waldiez flows
+os.environ["AUTOGEN_USE_DOCKER"] = "0"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"
@@ -90,6 +93,20 @@ if not hasattr(np, "_no_pep50_warning"):
         yield
 
     setattr(np, "_no_pep50_warning", _np_no_nep50_warning)  # noqa
+
+# Start logging.
+
+
+def start_logging() -> None:
+    """Start logging."""
+    runtime_logging.start(
+        logger_type="sqlite",
+        config={"dbname": "flow.db"},
+    )
+
+
+start_logging()
+
 # Load model API keys
 # NOTE:
 # This section assumes that a file named "rag_with_doc_agent_api_keys"
@@ -209,6 +226,24 @@ def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
 
+def stop_logging() -> None:
+    """Stop logging."""
+    runtime_logging.stop()
+    if not os.path.exists("logs"):
+        os.makedirs("logs")
+    for table in [
+        "chat_completions",
+        "agents",
+        "oai_wrappers",
+        "oai_clients",
+        "version",
+        "events",
+        "function_calls",
+    ]:
+        dest = os.path.join("logs", f"{table}.csv")
+        get_sqlite_out("flow.db", table, dest)
+
+
 # Start chatting
 
 
@@ -254,6 +289,7 @@ def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> RunResponseP
             for result in results:
                 result.process()
 
+        stop_logging()
     return results
 
 

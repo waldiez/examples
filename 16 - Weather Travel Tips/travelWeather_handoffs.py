@@ -17,7 +17,7 @@
 
 A group chat workflow checking whether the weather conditions are fine for visiting a specified site at a specified date. It contains an agent using tool to retrieve the temperature at real-time. The communication within the agents is achieved using handoffs.
 
-Requirements: ag2[openai]==0.9.6
+Requirements: ag2[openai]==0.9.7
 Tags: Weather, Travel, Group
 🧩 generated with ❤️ by Waldiez.
 """
@@ -79,6 +79,9 @@ import numpy as np
 import pandas as pd
 import requests
 
+# Common environment variable setup for Waldiez flows
+os.environ["AUTOGEN_USE_DOCKER"] = "0"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"

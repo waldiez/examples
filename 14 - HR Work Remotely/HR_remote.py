@@ -17,7 +17,7 @@
 
 A waldiez flow
 
-Requirements: ag2[openai]==0.9.6, langchain-google-community[gmail]
+Requirements: ag2[openai]==0.9.7, langchain-google-community[gmail]
 Tags:
 🧩 generated with ❤️ by Waldiez.
 """
@@ -81,6 +81,9 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+# Common environment variable setup for Waldiez flows
+os.environ["AUTOGEN_USE_DOCKER"] = "0"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"

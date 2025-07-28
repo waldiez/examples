@@ -17,7 +17,7 @@
 
 Coding and Financial Analysis
 
-Requirements: ag2[anthropic]==0.9.6, ag2[openai]==0.9.6, matplotlib, pandas, yfinance
+Requirements: ag2[anthropic]==0.9.7, ag2[openai]==0.9.7, matplotlib, pandas, yfinance
 Tags: Coding
 🧩 generated with ❤️ by Waldiez.
 """
@@ -67,6 +67,9 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
+# Common environment variable setup for Waldiez flows
+os.environ["AUTOGEN_USE_DOCKER"] = "0"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"

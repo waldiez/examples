@@ -17,7 +17,7 @@
 
 ReAct using Tavily
 
-Requirements: ag2[anthropic]==0.9.6, ag2[openai]==0.9.6, tavily-python
+Requirements: ag2[anthropic]==0.9.7, ag2[openai]==0.9.7, tavily-python
 Tags: ReAct, Tavily
 🧩 generated with ❤️ by Waldiez.
 """
@@ -64,6 +64,9 @@ from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtoco
 import numpy as np
 from tavily import TavilyClient
 
+# Common environment variable setup for Waldiez flows
+os.environ["AUTOGEN_USE_DOCKER"] = "0"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"

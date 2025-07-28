@@ -17,7 +17,7 @@
 
 Group Chat with Retrieval Augmented Generation.
 
-Requirements: ag2[openai]==0.9.6, beautifulsoup4, chromadb>=0.5.23, ipython, markdownify, protobuf==5.29.3, pypdf, sentence_transformers
+Requirements: ag2[openai]==0.9.7, beautifulsoup4, chromadb>=0.5.23, ipython, markdownify, protobuf==5.29.3, pypdf, sentence_transformers
 Tags: RAG, FLAML
 🧩 generated with ❤️ by Waldiez.
 """
@@ -69,6 +69,9 @@ from chromadb.utils.embedding_functions.sentence_transformer_embedding_function 
     SentenceTransformerEmbeddingFunction,
 )
 
+# Common environment variable setup for Waldiez flows
+os.environ["AUTOGEN_USE_DOCKER"] = "0"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"

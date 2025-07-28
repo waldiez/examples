@@ -17,7 +17,7 @@
 
 A example waldiez flow using wiki search
 
-Requirements: ag2[openai]==0.9.6, ag2[wikipedia, openai]
+Requirements: ag2[openai]==0.9.7, ag2[wikipedia, openai]
 Tags: wikipedia
 🧩 generated with ❤️ by Waldiez.
 """
@@ -64,6 +64,9 @@ from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtoco
 from autogen.tools.experimental import WikipediaPageLoadTool, WikipediaQueryRunTool
 import numpy as np
 
+# Common environment variable setup for Waldiez flows
+os.environ["AUTOGEN_USE_DOCKER"] = "0"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"

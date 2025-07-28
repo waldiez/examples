@@ -17,7 +17,7 @@
 
 Standup comedians without user input, with termination keywords.
 
-Requirements: ag2[openai]==0.9.6
+Requirements: ag2[openai]==0.9.7
 Tags: standup, commedy
 🧩 generated with ❤️ by Waldiez.
 """
@@ -61,6 +61,9 @@ from autogen.events import BaseEvent
 from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtocol
 import numpy as np
 
+# Common environment variable setup for Waldiez flows
+os.environ["AUTOGEN_USE_DOCKER"] = "0"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"

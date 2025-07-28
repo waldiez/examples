@@ -17,7 +17,7 @@
 
 Tool Use and Conversational Chess
 
-Requirements: ag2[openai]==0.9.6, chess
+Requirements: ag2[openai]==0.9.7, chess
 Tags:
 🧩 generated with ❤️ by Waldiez.
 """
@@ -65,6 +65,9 @@ import chess
 import chess.svg
 import numpy as np
 
+# Common environment variable setup for Waldiez flows
+os.environ["AUTOGEN_USE_DOCKER"] = "0"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
 # let's try to avoid:
 # module 'numpy' has no attribute '_no_nep50_warning'"
