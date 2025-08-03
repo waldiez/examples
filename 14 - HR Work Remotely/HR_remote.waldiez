@@ -801,11 +801,11 @@
           "topP": null,
           "maxTokens": null,
           "aws": {
-            "region": null,
-            "accessKey": null,
-            "secretKey": null,
-            "sessionToken": null,
-            "profileName": null
+            "region": "REPLACE_ME",
+            "accessKey": "REPLACE_ME",
+            "secretKey": "REPLACE_ME",
+            "sessionToken": "REPLACE_ME",
+            "profileName": "REPLACE_ME"
           },
           "extras": {},
           "defaultHeaders": {},

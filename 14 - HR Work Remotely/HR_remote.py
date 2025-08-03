@@ -76,12 +76,14 @@ from autogen.agentchat.group.patterns import DefaultPattern
 from autogen.events import BaseEvent
 from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtocol
 import numpy as np
+from dotenv import load_dotenv
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 # Common environment variable setup for Waldiez flows
+load_dotenv(override=True)
 os.environ["AUTOGEN_USE_DOCKER"] = "0"
 os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
@@ -124,7 +126,8 @@ start_logging()
 
 # Load model API keys
 # NOTE:
-# This section assumes that a file named "hr_remote_api_keys"
+# This section assumes that a file named:
+# "hr_remote_api_keys.py"
 # exists in the same directory as this file.
 # This file contains the API keys for the models used in this flow.
 # It should be .gitignored and not shared publicly.
@@ -624,20 +627,23 @@ def stop_logging() -> None:
 # Start chatting
 
 
-def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> RunResponseProtocol:
+def main(
+    on_event: Optional[Callable[[BaseEvent], bool]] = None,
+) -> list[dict[str, Any]]:
     """Start chatting.
 
     Returns
     -------
-    RunResponseProtocol
-        The result of the chat session, which can be a single ChatResult,
-        a list of ChatResults, or a dictionary mapping integers to ChatResults.
+    list[dict[str, Any]]
+        The result of the chat session.
 
     Raises
     ------
     RuntimeError
         If the chat session fails.
     """
+    results: list[RunResponseProtocol] | RunResponseProtocol = []
+    result_dicts: list[dict[str, Any]] = []
     results = run_group_chat(
         pattern=manager_pattern,
         messages="I would like to work remotely for a few days.",
@@ -656,39 +662,56 @@ def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> RunResponseP
                     should_continue = False
                 if not should_continue:
                     break
+            result_dict = {
+                "index": index,
+                "messages": result.messages,
+                "summary": result.summary,
+                "cost": (
+                    result.cost.model_dump(mode="json", fallback=str)
+                    if result.cost
+                    else None
+                ),
+                "context_variables": (
+                    result.context_variables.model_dump(mode="json", fallback=str)
+                    if result.context_variables
+                    else None
+                ),
+                "last_speaker": result.last_speaker,
+                "uuid": str(result.uuid),
+            }
+            result_dicts.append(result_dict)
     else:
         if not isinstance(results, list):
             results = [results]
-        for result in results:
+        for index, result in enumerate(results):
             result.process()
+            result_dict = {
+                "index": index,
+                "messages": result.messages,
+                "summary": result.summary,
+                "cost": (
+                    result.cost.model_dump(mode="json", fallback=str)
+                    if result.cost
+                    else None
+                ),
+                "context_variables": (
+                    result.context_variables.model_dump(mode="json", fallback=str)
+                    if result.context_variables
+                    else None
+                ),
+                "last_speaker": result.last_speaker,
+                "uuid": str(result.uuid),
+            }
+            result_dicts.append(result_dict)
 
     stop_logging()
-    return results
+    return result_dicts
 
 
 def call_main() -> None:
     """Run the main function and print the results."""
-    results: list[RunResponseProtocol] = main()
-    results_dicts: list[dict[str, Any]] = []
-    for result in results:
-        result_summary = result.summary
-        result_messages = result.messages
-        result_cost = result.cost
-        cost: dict[str, Any] | None = None
-        if result_cost:
-            cost = result_cost.model_dump(mode="json", fallback=str)
-        results_dicts.append(
-            {
-                "summary": result_summary,
-                "messages": result_messages,
-                "cost": cost,
-            }
-        )
-
-    results_dict = {
-        "results": results_dicts,
-    }
-    print(json.dumps(results_dict, indent=2))
+    results: list[dict[str, Any]] = main()
+    print(json.dumps(results, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

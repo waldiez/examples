@@ -67,6 +67,7 @@ from autogen import (
 from autogen.events import BaseEvent
 from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtocol
 import numpy as np
+from dotenv import load_dotenv
 
 # pylint: disable=broad-exception-caught
 try:
@@ -74,6 +75,7 @@ try:
 except BaseException:
     pass  # maybe on uvloop?
 # Common environment variable setup for Waldiez flows
+load_dotenv(override=True)
 os.environ["AUTOGEN_USE_DOCKER"] = "0"
 os.environ["ANONYMIZED_TELEMETRY"] = "False"
 #
@@ -122,7 +124,8 @@ start_logging()
 
 # Load model API keys
 # NOTE:
-# This section assumes that a file named "on_boarding_async_api_keys"
+# This section assumes that a file named:
+# "on_boarding_async_api_keys.py"
 # exists in the same directory as this file.
 # This file contains the API keys for the models used in this flow.
 # It should be .gitignored and not shared publicly.
@@ -323,20 +326,21 @@ async def stop_logging() -> None:
 
 async def main(
     on_event: Optional[Callable[[BaseEvent], Coroutine[None, None, bool]]] = None,
-) -> AsyncRunResponseProtocol:
+) -> list[dict[str, Any]]:
     """Start chatting.
 
     Returns
     -------
-    AsyncRunResponseProtocol
-        The result of the chat session, which can be a single ChatResult,
-        a list of ChatResults, or a dictionary mapping integers to ChatResults.
+    list[dict[str, Any]]
+        The result of the chat session.
 
     Raises
     ------
     RuntimeError
         If the chat session fails.
     """
+    results: list[AsyncRunResponseProtocol] | AsyncRunResponseProtocol = []
+    result_dicts: list[dict[str, Any]] = []
     results = await personal_information_agent.a_sequential_run(
         [
             {
@@ -390,39 +394,60 @@ async def main(
                     should_continue = False
                 if not should_continue:
                     break
+            result_dict = {
+                "index": index,
+                "messages": await result.messages,
+                "summary": await result.summary,
+                "cost": (
+                    (await result.cost).model_dump(mode="json", fallback=str)
+                    if await result.cost
+                    else None
+                ),
+                "context_variables": (
+                    (await result.context_variables).model_dump(
+                        mode="json", fallback=str
+                    )
+                    if await result.context_variables
+                    else None
+                ),
+                "last_speaker": await result.last_speaker,
+                "uuid": str(result.uuid),
+            }
+            result_dicts.append(result_dict)
     else:
         if not isinstance(results, list):
             results = [results]
-        for result in results:
+        for index, result in enumerate(results):
             await result.process()
+            result_dict = {
+                "index": index,
+                "messages": await result.messages,
+                "summary": await result.summary,
+                "cost": (
+                    (await result.cost).model_dump(mode="json", fallback=str)
+                    if await result.cost
+                    else None
+                ),
+                "context_variables": (
+                    (await result.context_variables).model_dump(
+                        mode="json", fallback=str
+                    )
+                    if await result.context_variables
+                    else None
+                ),
+                "last_speaker": await result.last_speaker,
+                "uuid": str(result.uuid),
+            }
+            result_dicts.append(result_dict)
 
     await stop_logging()
-    return results
+    return result_dicts
 
 
 async def call_main() -> None:
     """Run the main function and print the results."""
-    results: list[AsyncRunResponseProtocol] = await main()
-    results_dicts: list[dict[str, Any]] = []
-    for result in results:
-        result_summary = await result.summary
-        result_messages = await result.messages
-        result_cost = await result.cost
-        cost: dict[str, Any] | None = None
-        if result_cost:
-            cost = result_cost.model_dump(mode="json", fallback=str)
-        results_dicts.append(
-            {
-                "summary": result_summary,
-                "messages": result_messages,
-                "cost": cost,
-            }
-        )
-
-    results_dict = {
-        "results": results_dicts,
-    }
-    print(json.dumps(results_dict, indent=2))
+    results: list[dict[str, Any]] = await main()
+    print(json.dumps(results, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

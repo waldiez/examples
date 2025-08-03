@@ -515,7 +515,7 @@
         "createdAt": "2025-06-04T13:12:51.958Z",
         "updatedAt": "2025-06-04T13:12:58.037Z",
         "data": {
-          "apiKey": null,
+          "apiKey": "REPLACE_ME",
           "apiType": "openai",
           "apiVersion": null,
           "baseUrl": null,
@@ -523,11 +523,11 @@
           "topP": null,
           "maxTokens": null,
           "aws": {
-            "region": null,
-            "accessKey": null,
-            "secretKey": null,
-            "sessionToken": null,
-            "profileName": null
+            "region": "REPLACE_ME",
+            "accessKey": "REPLACE_ME",
+            "secretKey": "REPLACE_ME",
+            "sessionToken": "REPLACE_ME",
+            "profileName": "REPLACE_ME"
           },
           "extras": {},
           "defaultHeaders": {},
