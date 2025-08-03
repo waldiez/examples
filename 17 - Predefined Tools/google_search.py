@@ -214,8 +214,8 @@ def google_search(
     )
     return google_search_tool(
         query=query,
-        search_api_key=search_api_key,
-        search_engine_id=search_engine_id,
+        search_api_key=google_search_api_key,
+        search_engine_id=google_search_engine_id,
         num_results=num_results,
     )
 
