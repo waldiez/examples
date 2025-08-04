@@ -1,17 +1,17 @@
 {
-  "id": "wf-afhmSNzq3QHTSjqYUhtAF",
+  "id": "wf-pwbSjRAgEtVtWK5EQPAzx",
   "type": "flow",
   "version": "0.5.9",
-  "storageId": "wf-afhmSNzq3QHTSjqYUhtAF",
-  "name": "Reflection",
+  "storageId": "wf-pwbSjRAgEtVtWK5EQPAzx",
+  "name": "Blog post Writing with Reflection",
   "description": "Reflection and Blog post Writing",
   "tags": [
     "Reflection",
-    "Blog post"
+    "\"Blog post\""
   ],
   "requirements": [],
   "createdAt": "2025-05-18T16:49:59.873Z",
-  "updatedAt": "2025-05-31T16:00:50.789Z",
+  "updatedAt": "2025-08-04T13:49:14.026Z",
   "data": {
     "nodes": [
       {
@@ -22,8 +22,8 @@
           "y": 10
         },
         "measured": {
-          "width": 182,
-          "height": 182
+          "width": 180,
+          "height": 100
         },
         "selected": false,
         "hidden": true,
@@ -40,8 +40,8 @@
           "y": -165
         },
         "measured": {
-          "width": 200,
-          "height": 215
+          "width": 180,
+          "height": 120
         },
         "selected": false,
         "hidden": false,
@@ -59,8 +59,8 @@
           "y": 90
         },
         "measured": {
-          "width": 200,
-          "height": 215
+          "width": 180,
+          "height": 120
         },
         "selected": false,
         "hidden": false,
@@ -78,8 +78,8 @@
           "y": 345
         },
         "measured": {
-          "width": 200,
-          "height": 215
+          "width": 180,
+          "height": 120
         },
         "selected": false,
         "hidden": false,
@@ -97,8 +97,8 @@
           "y": 585
         },
         "measured": {
-          "width": 200,
-          "height": 215
+          "width": 180,
+          "height": 120
         },
         "selected": false,
         "hidden": false,
@@ -113,13 +113,13 @@
         },
         "position": {
           "x": 75,
-          "y": 210
+          "y": -225
         },
         "measured": {
-          "width": 200,
-          "height": 215
+          "width": 180,
+          "height": 120
         },
-        "selected": true,
+        "selected": false,
         "hidden": false,
         "dragging": false,
         "className": ""
@@ -135,16 +135,76 @@
           "y": 240
         },
         "measured": {
-          "width": 200,
-          "height": 215
+          "width": 180,
+          "height": 120
         },
-        "selected": false,
+        "selected": true,
         "hidden": false,
         "dragging": false,
         "className": ""
       }
     ],
     "edges": [
+      {
+        "id": "we-1747587347416ekDsyp52ZXSq7dJmGw13v",
+        "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "target": "1747587121881_z5Y971nA86t3GHAjWwuA",
+        "type": "nested",
+        "hidden": false,
+        "animated": true,
+        "selected": false,
+        "style": {
+          "stroke": "#66bc57",
+          "strokeWidth": 1
+        },
+        "sourceHandle": "agent-handle-bottom-source-1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "targetHandle": "agent-handle-left-target-1747587121881_z5Y971nA86t3GHAjWwuA"
+      },
+      {
+        "id": "we-17475873447682tBCgW-7BLtRBvGvyt2_q",
+        "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "target": "17475870887015fT9HMRt7Op1Y2l0EDLSc",
+        "type": "nested",
+        "hidden": false,
+        "animated": true,
+        "selected": false,
+        "style": {
+          "stroke": "#66bc57",
+          "strokeWidth": 1
+        },
+        "sourceHandle": "agent-handle-bottom-source-1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "targetHandle": "agent-handle-left-target-17475870887015fT9HMRt7Op1Y2l0EDLSc"
+      },
+      {
+        "id": "we-1747587341567Vf6ZV_ahewHcJSZoPOmXD",
+        "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "target": "wa-1747587027822eX627_nqb5tWvkkUUq44W",
+        "type": "nested",
+        "hidden": false,
+        "animated": true,
+        "selected": false,
+        "style": {
+          "stroke": "#66bc57",
+          "strokeWidth": 1
+        },
+        "sourceHandle": "agent-handle-bottom-source-1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "targetHandle": "agent-handle-left-target-wa-1747587027822eX627_nqb5tWvkkUUq44W"
+      },
+      {
+        "id": "we-1747587350867T7Yogz9BL_p963ijyxCPs",
+        "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "target": "1747587163482cY8jFkfB079xEe8mI77M2",
+        "type": "nested",
+        "hidden": false,
+        "animated": true,
+        "selected": false,
+        "style": {
+          "stroke": "#66bc57",
+          "strokeWidth": 1
+        },
+        "sourceHandle": "agent-handle-bottom-source-1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "targetHandle": "agent-handle-left-target-1747587163482cY8jFkfB079xEe8mI77M2"
+      },
       {
         "id": "we-174758729031787ySRT6YrNGz58-rWLSQv",
         "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
@@ -163,74 +223,14 @@
           "stroke": "#66bc57",
           "strokeWidth": 1
         },
-        "sourceHandle": "agent-handle-right-source-1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "sourceHandle": "agent-handle-top-source-1747587231249CS8kwY_f_NdENhVDsPdDW",
         "targetHandle": "agent-handle-left-target-1747587201016JPcWAqQsZ7f_hwRZ_OniJ"
-      },
-      {
-        "id": "we-1747587341567Vf6ZV_ahewHcJSZoPOmXD",
-        "source": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "target": "wa-1747587027822eX627_nqb5tWvkkUUq44W",
-        "type": "nested",
-        "hidden": false,
-        "animated": true,
-        "selected": false,
-        "style": {
-          "stroke": "#66bc57",
-          "strokeWidth": 1
-        },
-        "sourceHandle": "agent-handle-right-source-1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "targetHandle": "agent-handle-left-target-wa-1747587027822eX627_nqb5tWvkkUUq44W"
-      },
-      {
-        "id": "we-17475873447682tBCgW-7BLtRBvGvyt2_q",
-        "source": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "target": "17475870887015fT9HMRt7Op1Y2l0EDLSc",
-        "type": "nested",
-        "hidden": false,
-        "animated": true,
-        "selected": false,
-        "style": {
-          "stroke": "#66bc57",
-          "strokeWidth": 1
-        },
-        "sourceHandle": "agent-handle-right-source-1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "targetHandle": "agent-handle-left-target-17475870887015fT9HMRt7Op1Y2l0EDLSc"
-      },
-      {
-        "id": "we-1747587347416ekDsyp52ZXSq7dJmGw13v",
-        "source": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "target": "1747587121881_z5Y971nA86t3GHAjWwuA",
-        "type": "nested",
-        "hidden": false,
-        "animated": true,
-        "selected": false,
-        "style": {
-          "stroke": "#66bc57",
-          "strokeWidth": 1
-        },
-        "sourceHandle": "agent-handle-right-source-1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "targetHandle": "agent-handle-left-target-1747587121881_z5Y971nA86t3GHAjWwuA"
-      },
-      {
-        "id": "we-1747587350867T7Yogz9BL_p963ijyxCPs",
-        "source": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "target": "1747587163482cY8jFkfB079xEe8mI77M2",
-        "type": "nested",
-        "hidden": false,
-        "animated": true,
-        "selected": false,
-        "style": {
-          "stroke": "#66bc57",
-          "strokeWidth": 1
-        },
-        "sourceHandle": "agent-handle-right-source-1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "targetHandle": "agent-handle-left-target-1747587163482cY8jFkfB079xEe8mI77M2"
       }
     ],
     "viewport": {
-      "x": 539.8523316062176,
-      "y": 167.15544041450775,
-      "zoom": 0.6373056994818653
+      "x": 285.85483870967744,
+      "y": 183.6290322580645,
+      "zoom": 0.5494623655913978
     },
     "agents": {
       "groupManagerAgents": [],
@@ -450,30 +450,11 @@
             "tools": [],
             "nestedChats": [
               {
-                "triggeredBy": [
-                  "1747587231249CS8kwY_f_NdENhVDsPdDW"
-                ],
-                "messages": [
-                  {
-                    "id": "we-1747587341567Vf6ZV_ahewHcJSZoPOmXD",
-                    "isReply": false
-                  },
-                  {
-                    "id": "we-17475873447682tBCgW-7BLtRBvGvyt2_q",
-                    "isReply": false
-                  },
-                  {
-                    "id": "we-1747587347416ekDsyp52ZXSq7dJmGw13v",
-                    "isReply": false
-                  },
-                  {
-                    "id": "we-1747587350867T7Yogz9BL_p963ijyxCPs",
-                    "isReply": false
-                  }
-                ],
+                "messages": [],
+                "triggeredBy": [],
                 "condition": {
                   "conditionType": "string_llm",
-                  "prompt": "Start a nested chat"
+                  "prompt": ""
                 },
                 "available": {
                   "type": "none",
@@ -516,8 +497,27 @@
             "tools": [],
             "nestedChats": [
               {
-                "messages": [],
-                "triggeredBy": [],
+                "triggeredBy": [
+                  "1747587201016JPcWAqQsZ7f_hwRZ_OniJ"
+                ],
+                "messages": [
+                  {
+                    "id": "we-1747587347416ekDsyp52ZXSq7dJmGw13v",
+                    "isReply": false
+                  },
+                  {
+                    "id": "we-17475873447682tBCgW-7BLtRBvGvyt2_q",
+                    "isReply": false
+                  },
+                  {
+                    "id": "we-1747587341567Vf6ZV_ahewHcJSZoPOmXD",
+                    "isReply": false
+                  },
+                  {
+                    "id": "we-1747587350867T7Yogz9BL_p963ijyxCPs",
+                    "isReply": false
+                  }
+                ],
                 "condition": {
                   "conditionType": "string_llm",
                   "prompt": ""
@@ -552,7 +552,7 @@
         "tags": [],
         "requirements": [],
         "createdAt": "2025-05-18T16:51:00.899Z",
-        "updatedAt": "2025-05-18T16:51:17.464Z",
+        "updatedAt": "2025-07-07T15:14:00.191Z",
         "data": {
           "apiKey": "REPLACE_ME",
           "apiType": "openai",
@@ -562,11 +562,11 @@
           "topP": null,
           "maxTokens": null,
           "aws": {
-            "region": "REPLACE_ME",
-            "accessKey": "REPLACE_ME",
-            "secretKey": "REPLACE_ME",
-            "sessionToken": "REPLACE_ME",
-            "profileName": "REPLACE_ME"
+            "region": null,
+            "accessKey": null,
+            "secretKey": null,
+            "sessionToken": null,
+            "profileName": null
           },
           "extras": {},
           "defaultHeaders": {},
@@ -580,58 +580,14 @@
     "tools": [],
     "chats": [
       {
-        "id": "we-174758729031787ySRT6YrNGz58-rWLSQv",
-        "type": "chat",
-        "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
-        "target": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "data": {
-          "sourceType": "assistant",
-          "targetType": "assistant",
-          "name": "Critic => Writer",
-          "order": 0,
-          "description": "New connection",
-          "position": 1,
-          "clearHistory": true,
-          "maxTurns": 2,
-          "message": {
-            "type": "string",
-            "content": "Write a concise but engaging blog post about DeepLearning.AI. Make sure the blog post is within 100 words.",
-            "context": {},
-            "useCarryover": false
-          },
-          "summary": {
-            "method": "lastMsg",
-            "prompt": "",
-            "args": {}
-          },
-          "nestedChat": {
-            "message": null,
-            "reply": null
-          },
-          "prerequisites": [],
-          "condition": {
-            "conditionType": "string_llm",
-            "prompt": "Handoff to another agent"
-          },
-          "available": {
-            "type": "none",
-            "value": ""
-          },
-          "afterWork": null,
-          "silent": false,
-          "realSource": null,
-          "realTarget": null
-        }
-      },
-      {
-        "id": "we-1747587341567Vf6ZV_ahewHcJSZoPOmXD",
+        "id": "we-1747587347416ekDsyp52ZXSq7dJmGw13v",
         "type": "nested",
-        "source": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "target": "wa-1747587027822eX627_nqb5tWvkkUUq44W",
+        "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "target": "1747587121881_z5Y971nA86t3GHAjWwuA",
         "data": {
           "sourceType": "assistant",
           "targetType": "assistant",
-          "name": "Writer => SEO reviewer",
+          "name": "Writer => Ethics Reviewer",
           "order": -1,
           "description": "New connection",
           "position": 1,
@@ -668,14 +624,14 @@
           },
           "afterWork": null,
           "silent": false,
-          "realSource": null,
-          "realTarget": null
+          "realSource": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+          "realTarget": "1747587121881_z5Y971nA86t3GHAjWwuA"
         }
       },
       {
         "id": "we-17475873447682tBCgW-7BLtRBvGvyt2_q",
         "type": "nested",
-        "source": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
+        "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
         "target": "17475870887015fT9HMRt7Op1Y2l0EDLSc",
         "data": {
           "sourceType": "assistant",
@@ -717,19 +673,19 @@
           },
           "afterWork": null,
           "silent": false,
-          "realSource": null,
-          "realTarget": null
+          "realSource": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+          "realTarget": "17475870887015fT9HMRt7Op1Y2l0EDLSc"
         }
       },
       {
-        "id": "we-1747587347416ekDsyp52ZXSq7dJmGw13v",
+        "id": "we-1747587341567Vf6ZV_ahewHcJSZoPOmXD",
         "type": "nested",
-        "source": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
-        "target": "1747587121881_z5Y971nA86t3GHAjWwuA",
+        "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "target": "wa-1747587027822eX627_nqb5tWvkkUUq44W",
         "data": {
           "sourceType": "assistant",
           "targetType": "assistant",
-          "name": "Writer => Ethics Reviewer",
+          "name": "Writer => SEO reviewer",
           "order": -1,
           "description": "New connection",
           "position": 3,
@@ -766,14 +722,14 @@
           },
           "afterWork": null,
           "silent": false,
-          "realSource": null,
-          "realTarget": null
+          "realSource": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+          "realTarget": "wa-1747587027822eX627_nqb5tWvkkUUq44W"
         }
       },
       {
         "id": "we-1747587350867T7Yogz9BL_p963ijyxCPs",
         "type": "nested",
-        "source": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
+        "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
         "target": "1747587163482cY8jFkfB079xEe8mI77M2",
         "data": {
           "sourceType": "assistant",
@@ -815,8 +771,52 @@
           },
           "afterWork": null,
           "silent": false,
-          "realSource": null,
-          "realTarget": null
+          "realSource": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+          "realTarget": "1747587163482cY8jFkfB079xEe8mI77M2"
+        }
+      },
+      {
+        "id": "we-174758729031787ySRT6YrNGz58-rWLSQv",
+        "type": "chat",
+        "source": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+        "target": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ",
+        "data": {
+          "sourceType": "assistant",
+          "targetType": "assistant",
+          "name": "Critic => Writer",
+          "order": 0,
+          "description": "New connection",
+          "position": 1,
+          "clearHistory": true,
+          "maxTurns": 2,
+          "message": {
+            "type": "string",
+            "content": "Write a concise but engaging blog post about DeepLearning.AI. Make sure the blog post is within 100 words.",
+            "context": {},
+            "useCarryover": false
+          },
+          "summary": {
+            "method": "lastMsg",
+            "prompt": "",
+            "args": {}
+          },
+          "nestedChat": {
+            "message": null,
+            "reply": null
+          },
+          "prerequisites": [],
+          "condition": {
+            "conditionType": "string_llm",
+            "prompt": "Handoff to another agent"
+          },
+          "available": {
+            "type": "none",
+            "value": ""
+          },
+          "afterWork": null,
+          "silent": false,
+          "realSource": "1747587231249CS8kwY_f_NdENhVDsPdDW",
+          "realTarget": "1747587201016JPcWAqQsZ7f_hwRZ_OniJ"
         }
       }
     ],

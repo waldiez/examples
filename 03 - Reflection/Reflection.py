@@ -13,12 +13,12 @@
 # pyright: reportUnknownMemberType=false,reportUnknownLambdaType=false,reportUnnecessaryIsInstance=false
 # pyright: reportUnknownVariableType=false
 
-"""Reflection.
+"""Blog post Writing with Reflection.
 
 Reflection and Blog post Writing
 
 Requirements: ag2[openai]==0.9.7
-Tags: Reflection, Blog post
+Tags: Reflection, "Blog post"
 🧩 generated with ❤️ by Waldiez.
 """
 
@@ -107,7 +107,7 @@ start_logging()
 # Load model API keys
 # NOTE:
 # This section assumes that a file named:
-# "reflection_api_keys.py"
+# "blog_post_writing_wi_api_keys.py"
 # exists in the same directory as this file.
 # This file contains the API keys for the models used in this flow.
 # It should be .gitignored and not shared publicly.
@@ -134,10 +134,10 @@ def load_api_key_module(flow_name: str) -> ModuleType:
     return importlib.import_module(module_name)
 
 
-__MODELS_MODULE__ = load_api_key_module("reflection")
+__MODELS_MODULE__ = load_api_key_module("blog_post_writing_wi")
 
 
-def get_reflection_model_api_key(model_name: str) -> str:
+def get_blog_post_writing_wi_model_api_key(model_name: str) -> str:
     """Get the model api key.
     Parameters
     ----------
@@ -149,7 +149,7 @@ def get_reflection_model_api_key(model_name: str) -> str:
     str
         The model api key.
     """
-    return __MODELS_MODULE__.get_reflection_model_api_key(model_name)
+    return __MODELS_MODULE__.get_blog_post_writing_wi_model_api_key(model_name)
 
 
 # Models
@@ -157,7 +157,7 @@ def get_reflection_model_api_key(model_name: str) -> str:
 gpt_3_5_turbo_llm_config: dict[str, Any] = {
     "model": "gpt-3.5-turbo",
     "api_type": "openai",
-    "api_key": get_reflection_model_api_key("gpt_3_5_turbo"),
+    "api_key": get_blog_post_writing_wi_model_api_key("gpt_3_5_turbo"),
 }
 
 # Agents
@@ -298,14 +298,14 @@ def nested_chat_message_writer_to_seo_reviewer(
         \n\n {recipient.chat_messages_for_summary(sender)[-1]['content']}"""
 
 
-writer_chat_queue: list[dict[str, Any]] = [
+critic_chat_queue: list[dict[str, Any]] = [
     {
         "summary_method": "last_msg",
         "max_turns": 1,
         "clear_history": True,
         "chat_id": 0,
-        "recipient": seo_reviewer,
-        "message": nested_chat_message_writer_to_seo_reviewer,
+        "recipient": ethics_reviewer,
+        "message": nested_chat_message_writer_to_ethics_reviewer,
     },
     {
         "summary_method": "last_msg",
@@ -320,8 +320,8 @@ writer_chat_queue: list[dict[str, Any]] = [
         "max_turns": 1,
         "clear_history": True,
         "chat_id": 2,
-        "recipient": ethics_reviewer,
-        "message": nested_chat_message_writer_to_ethics_reviewer,
+        "recipient": seo_reviewer,
+        "message": nested_chat_message_writer_to_seo_reviewer,
     },
     {
         "summary_method": "last_msg",
@@ -333,9 +333,9 @@ writer_chat_queue: list[dict[str, Any]] = [
     },
 ]
 
-writer.register_nested_chats(  # pyright: ignore
-    trigger=["critic"],
-    chat_queue=writer_chat_queue,
+critic.register_nested_chats(  # pyright: ignore
+    trigger=["writer"],
+    chat_queue=critic_chat_queue,
     use_async=False,
     ignore_async_in_sync_chat=True,
 )
