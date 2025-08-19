@@ -17,7 +17,7 @@
 
 A waldiez flow
 
-Requirements: ag2[openai]==0.9.7, langchain-google-community[gmail]
+Requirements: ag2[openai]==0.9.8.post1, langchain-google-community[gmail]
 Tags:
 🧩 generated with ❤️ by Waldiez.
 """
@@ -595,7 +595,7 @@ def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
         return
     rows = cursor.fetchall()
     column_names = [description[0] for description in cursor.description]
-    data = [dict(zip(column_names, row)) for row in rows]
+    data = [dict(zip(column_names, row, strict=True)) for row in rows]
     conn.close()
     with open(csv_file, "w", newline="", encoding="utf-8") as file:
         csv_writer = csv.DictWriter(file, fieldnames=column_names)
@@ -639,8 +639,8 @@ def main(
 
     Raises
     ------
-    RuntimeError
-        If the chat session fails.
+    SystemExit
+        If the user interrupts the chat session.
     """
     results: list[RunResponseProtocol] | RunResponseProtocol = []
     result_dicts: list[dict[str, Any]] = []
@@ -656,12 +656,13 @@ def main(
             for event in result.events:
                 try:
                     should_continue = on_event(event)
-                except Exception as e:
+                except BaseException as e:
+                    print(f"Error in event handler: {e}")
                     raise SystemExit("Error in event handler: " + str(e)) from e
                 if event.type == "run_completion":
-                    should_continue = False
-                if not should_continue:
                     break
+                if not should_continue:
+                    raise SystemExit("Event handler stopped processing")
             result_dict = {
                 "index": index,
                 "messages": result.messages,

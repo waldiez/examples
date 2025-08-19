@@ -17,7 +17,7 @@
 
 Async version of Sequential Chats and Customer Onboarding
 
-Requirements: ag2[anthropic]==0.9.7, ag2[openai]==0.9.7
+Requirements: ag2[anthropic]==0.9.8.post1, ag2[openai]==0.9.8.post1
 Tags: Sequential, Customer, On-boarding, Onboarding
 🧩 generated with ❤️ by Waldiez.
 """
@@ -288,7 +288,7 @@ async def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
         return
     rows = await cursor.fetchall()
     column_names = [description[0] for description in cursor.description]
-    data = [dict(zip(column_names, row)) for row in rows]
+    data = [dict(zip(column_names, row, strict=True)) for row in rows]
     await cursor.close()
     await conn.close()
     async with aiofiles.open(csv_file, "w", newline="", encoding="utf-8") as file:
@@ -302,10 +302,7 @@ async def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
 
 async def stop_logging() -> None:
     """Stop logging."""
-    # pylint: disable=import-outside-toplevel
-    from asyncer import asyncify
-
-    await asyncify(runtime_logging.stop)()
+    await asyncio.to_thread(runtime_logging.stop)
     if not os.path.exists("logs"):
         os.makedirs("logs")
     for table in [
@@ -336,8 +333,8 @@ async def main(
 
     Raises
     ------
-    RuntimeError
-        If the chat session fails.
+    SystemExit
+        If the user interrupts the chat session.
     """
     results: list[AsyncRunResponseProtocol] | AsyncRunResponseProtocol = []
     result_dicts: list[dict[str, Any]] = []
@@ -388,12 +385,13 @@ async def main(
             async for event in result.events:
                 try:
                     should_continue = await on_event(event)
-                except Exception as e:
+                except BaseException as e:
+                    print(f"Error in event handler: {e}")
                     raise SystemExit("Error in event handler: " + str(e)) from e
                 if event.type == "run_completion":
-                    should_continue = False
-                if not should_continue:
                     break
+                if not should_continue:
+                    raise SystemExit("Event handler stopped processing")
             result_dict = {
                 "index": index,
                 "messages": await result.messages,
