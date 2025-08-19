@@ -17,7 +17,7 @@
 
 Coding and Financial Analysis
 
-Requirements: ag2[anthropic]==0.9.8.post1, ag2[openai]==0.9.8.post1, matplotlib, pandas, yfinance
+Requirements: ag2==0.9.8.post1, ag2[anthropic]==0.9.8.post1, matplotlib, pandas, yfinance
 Tags: Coding
 🧩 generated with ❤️ by Waldiez.
 """

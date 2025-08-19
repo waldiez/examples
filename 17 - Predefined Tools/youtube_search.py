@@ -17,7 +17,7 @@
 
 A example waldiez flow using YouTube search
 
-Requirements: ag2[google-search, openai], ag2[openai]==0.9.8.post1
+Requirements: ag2==0.9.8.post1, ag2[google-search]
 Tags: youtube
 🧩 generated with ❤️ by Waldiez.
 """

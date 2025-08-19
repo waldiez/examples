@@ -17,7 +17,7 @@
 
 Chain-of-Thought Reasoning with DFS
 
-Requirements: ag2[gemini]==0.9.8.post1, ag2[openai]==0.9.8.post1
+Requirements: ag2==0.9.8.post1, ag2[gemini]==0.9.8.post1
 Tags: reasoning, chain of thought, depth-first search, dfs
 🧩 generated with ❤️ by Waldiez.
 """

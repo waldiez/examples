@@ -17,7 +17,7 @@
 
 Retrieval Augmented Generation using a Doc agent. Based on <https://docs.ag2.ai/latest/docs/user-guide/reference-agents/docagent/#example>
 
-Requirements: ag2[openai]==0.9.8.post1, llama-index, llama-index-core, llama-index-embeddings-huggingface, llama-index-llms-langchain, llama-index-llms-openai, llama-index-vector-stores-chroma
+Requirements: ag2==0.9.8.post1, llama-index, llama-index-core, llama-index-embeddings-huggingface, llama-index-llms-langchain, llama-index-llms-openai, llama-index-vector-stores-chroma
 Tags: RAG, Doc Agent
 🧩 generated with ❤️ by Waldiez.
 """
