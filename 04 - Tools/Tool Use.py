@@ -17,7 +17,7 @@
 
 Tool Use and Conversational Chess
 
-Requirements: ag2==0.9.8.post1, chess
+Requirements: ag2[openai]==0.9.9, chess
 Tags:
 🧩 generated with ❤️ by Waldiez.
 """

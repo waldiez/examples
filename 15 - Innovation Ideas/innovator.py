@@ -17,7 +17,7 @@
 
 A waldiez flow that provides innovative ideas based on recent arxiv papers.
 
-Requirements: ag2==0.9.8.post1, arxiv
+Requirements: ag2[openai]==0.9.9, arxiv
 Tags: arxiv
 🧩 generated with ❤️ by Waldiez.
 """

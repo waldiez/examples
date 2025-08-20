@@ -17,7 +17,7 @@
 
 Using CaptainAgent without libraries. Based on: <https://docs.ag2.ai/latest/docs/user-guide/reference-agents/captainagent/#using-captainagent-without-libraries>
 
-Requirements: ag2==0.9.8.post1, arxiv, chromadb, easyocr, huggingface-hub, markdownify, openai-whisper, pandas, pymupdf, python-pptx, scipy, sentence-transformers, wikipedia-api
+Requirements: ag2[openai]==0.9.9, arxiv, chromadb, easyocr, huggingface-hub, markdownify, openai-whisper, pandas, pymupdf, python-pptx, scipy, sentence-transformers, wikipedia-api
 Tags: CaptainAgent, ag2
 🧩 generated with ❤️ by Waldiez.
 """
@@ -168,6 +168,16 @@ captain_executor = LocalCommandLineCodeExecutor(
     work_dir="groupchat",
 )
 
+# try to avoid having both temperature and top_p in the config
+try:
+    _CAPTAIN_AGENT_DEFAULT_CONFIG = CaptainAgent.DEFAULT_NESTED_CONFIG
+    _CAPTAIN_AGENT_DEFAULT_CONFIG.get("autobuild_build_config", {}).get(
+        "default_llm_config", {}
+    ).pop("top_p", None)
+    CaptainAgent.DEFAULT_NESTED_CONFIG = _CAPTAIN_AGENT_DEFAULT_CONFIG
+except Exception as e:
+    print(f"Error occurred while patching default nested config: {e}")
+
 captain = CaptainAgent(
     name="captain",
     description="A new Captain agent",
@@ -184,7 +194,7 @@ captain = CaptainAgent(
             "agent_model": "gpt-4o",
         },
         "autobuild_build_config": {
-            "default_llm_config": {"temperature": 1, "top_p": 0.95, "max_tokens": 2048},
+            "default_llm_config": {"max_tokens": 2048, "temperature": 1},
             "code_execution_config": {
                 "timeout": 300,
                 "work_dir": "groupchat",

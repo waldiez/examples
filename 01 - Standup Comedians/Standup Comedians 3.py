@@ -17,7 +17,7 @@
 
 Standup comedians without user input, with termination keywords.
 
-Requirements: ag2==0.9.8.post1
+Requirements: ag2[openai]==0.9.9
 Tags: standup, commedy
 🧩 generated with ❤️ by Waldiez.
 """

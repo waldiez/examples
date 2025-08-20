@@ -17,7 +17,7 @@
 
 A waldiez flow
 
-Requirements: ag2==0.9.8.post1, langchain-google-community[gmail]
+Requirements: ag2[openai]==0.9.9, langchain-google-community[gmail]
 Tags:
 🧩 generated with ❤️ by Waldiez.
 """
