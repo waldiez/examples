@@ -13,12 +13,13 @@
 # pyright: reportUnknownMemberType=false,reportUnknownLambdaType=false,reportUnnecessaryIsInstance=false
 # pyright: reportUnknownVariableType=false
 
-"""Waldiez Flow.
+"""Hierarchical_Pattern.
 
-A waldiez flow
+A waldiez flow for the AG2 example on hierarchical pattern: https://docs.ag2.ai/latest/docs/user-guide/advanced-concepts/pattern-cookbook/hierarchical/
+The Hierarchical, or Tree, Orchestration Pattern is a powerful approach to organizing multi-agent workflows, inspired by traditional organizational structures where work and information flow through a well-defined chain of command. This pattern creates a tree-structured arrangement of agents with clear levels of responsibility, specialization, and reporting relationships.
 
-Requirements: ag2[openai]==0.9.8.post1
-Tags: 
+Requirements: ag2[openai]==0.9.9
+Tags:
 🧩 generated with ❤️ by Waldiez.
 """
 
@@ -34,17 +35,51 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import Annotated, Any, Callable, Coroutine, Dict, List, Optional, Set, Tuple, Union
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    Coroutine,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 import autogen  # type: ignore
-from autogen import Agent, Cache, ChatResult, ConversableAgent, GroupChat, UserProxyAgent, register_function, runtime_logging
+from autogen import (
+    Agent,
+    Cache,
+    ChatResult,
+    ConversableAgent,
+    GroupChat,
+    UserProxyAgent,
+    register_function,
+    runtime_logging,
+)
 from autogen.agentchat import GroupChatManager, run_group_chat
-from autogen.agentchat.group import AgentNameTarget, AgentTarget, ContextExpression, ContextVariables, ExpressionAvailableCondition, ExpressionContextCondition, OnCondition, OnContextCondition, ReplyResult, RevertToUserTarget, StringLLMCondition, TerminateTarget
+from autogen.agentchat.group import (
+    AgentNameTarget,
+    AgentTarget,
+    ContextExpression,
+    ContextVariables,
+    ExpressionAvailableCondition,
+    ExpressionContextCondition,
+    OnCondition,
+    OnContextCondition,
+    ReplyResult,
+    RevertToUserTarget,
+    StringLLMCondition,
+    TerminateTarget,
+)
 from autogen.agentchat.group.patterns import DefaultPattern
 from autogen.events import BaseEvent
 from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtocol
 import numpy as np
 from dotenv import load_dotenv
+
 # Common environment variable setup for Waldiez flows
 load_dotenv(override=True)
 os.environ["AUTOGEN_USE_DOCKER"] = "0"
@@ -71,9 +106,11 @@ if not hasattr(np, "_no_pep50_warning"):
             Nothing.
         """
         yield
+
     setattr(np, "_no_pep50_warning", _np_no_nep50_warning)  # noqa
 
 # Start logging.
+
 
 def start_logging() -> None:
     """Start logging."""
@@ -88,7 +125,7 @@ start_logging()
 # Load model API keys
 # NOTE:
 # This section assumes that a file named:
-# "waldiez_flow_api_keys.py"
+# "hierarchical_pattern_api_keys.py"
 # exists in the same directory as this file.
 # This file contains the API keys for the models used in this flow.
 # It should be .gitignored and not shared publicly.
@@ -114,10 +151,11 @@ def load_api_key_module(flow_name: str) -> ModuleType:
         return importlib.reload(sys.modules[module_name])
     return importlib.import_module(module_name)
 
-__MODELS_MODULE__ = load_api_key_module("waldiez_flow")
+
+__MODELS_MODULE__ = load_api_key_module("hierarchical_pattern")
 
 
-def get_waldiez_flow_model_api_key(model_name: str) -> str:
+def get_hierarchical_pattern_model_api_key(model_name: str) -> str:
     """Get the model api key.
     Parameters
     ----------
@@ -129,18 +167,24 @@ def get_waldiez_flow_model_api_key(model_name: str) -> str:
     str
         The model api key.
     """
-    return __MODELS_MODULE__.get_waldiez_flow_model_api_key(model_name)
+    return __MODELS_MODULE__.get_hierarchical_pattern_model_api_key(model_name)
 
 
 # Tools
 
-def complete_solar_research(research_content: str, context_variables: ContextVariables) -> ReplyResult:
+
+def complete_solar_research(
+    research_content: str, context_variables: ContextVariables
+) -> ReplyResult:
     """Submit solar energy research findings"""
     context_variables["solar_research"] = research_content
     context_variables["specialist_a1_completed"] = True
 
     # Check if both specialists under Manager A have completed their tasks
-    if context_variables["specialist_a1_completed"] and context_variables["specialist_a2_completed"]:
+    if (
+        context_variables["specialist_a1_completed"]
+        and context_variables["specialist_a2_completed"]
+    ):
         context_variables["manager_a_completed"] = True
 
     return ReplyResult(
@@ -149,13 +193,19 @@ def complete_solar_research(research_content: str, context_variables: ContextVar
         target=AgentTarget(renewable_manager),
     )
 
-def complete_wind_research(research_content: str, context_variables: ContextVariables) -> ReplyResult:
+
+def complete_wind_research(
+    research_content: str, context_variables: ContextVariables
+) -> ReplyResult:
     """Submit wind energy research findings"""
     context_variables["wind_research"] = research_content
     context_variables["specialist_a2_completed"] = True
 
     # Check if both specialists under Manager A have completed their tasks
-    if context_variables["specialist_a1_completed"] and context_variables["specialist_a2_completed"]:
+    if (
+        context_variables["specialist_a1_completed"]
+        and context_variables["specialist_a2_completed"]
+    ):
         context_variables["manager_a_completed"] = True
 
     return ReplyResult(
@@ -164,13 +214,19 @@ def complete_wind_research(research_content: str, context_variables: ContextVari
         target=AgentTarget(renewable_manager),
     )
 
-def complete_hydro_research(research_content: str, context_variables: ContextVariables) -> ReplyResult:
+
+def complete_hydro_research(
+    research_content: str, context_variables: ContextVariables
+) -> ReplyResult:
     """Submit hydroelectric energy research findings"""
     context_variables["hydro_research"] = research_content
     context_variables["specialist_b1_completed"] = True
 
     # Check if both specialists under Manager B have completed their tasks
-    if context_variables["specialist_b1_completed"] and context_variables["specialist_b2_completed"]:
+    if (
+        context_variables["specialist_b1_completed"]
+        and context_variables["specialist_b2_completed"]
+    ):
         context_variables["manager_b_completed"] = True
 
     return ReplyResult(
@@ -179,13 +235,19 @@ def complete_hydro_research(research_content: str, context_variables: ContextVar
         target=AgentTarget(storage_manager),
     )
 
-def complete_geothermal_research(research_content: str, context_variables: ContextVariables) -> ReplyResult:
+
+def complete_geothermal_research(
+    research_content: str, context_variables: ContextVariables
+) -> ReplyResult:
     """Submit geothermal energy research findings"""
     context_variables["geothermal_research"] = research_content
     context_variables["specialist_b2_completed"] = True
 
     # Check if both specialists under Manager B have completed their tasks
-    if context_variables["specialist_b1_completed"] and context_variables["specialist_b2_completed"]:
+    if (
+        context_variables["specialist_b1_completed"]
+        and context_variables["specialist_b2_completed"]
+    ):
         context_variables["manager_b_completed"] = True
 
     return ReplyResult(
@@ -194,7 +256,10 @@ def complete_geothermal_research(research_content: str, context_variables: Conte
         target=AgentTarget(storage_manager),
     )
 
-def complete_biofuel_research(research_content: str, context_variables: ContextVariables) -> ReplyResult:
+
+def complete_biofuel_research(
+    research_content: str, context_variables: ContextVariables
+) -> ReplyResult:
     """Submit biofuel research findings"""
     context_variables["biofuel_research"] = research_content
     context_variables["specialist_c1_completed"] = True
@@ -206,12 +271,18 @@ def complete_biofuel_research(research_content: str, context_variables: ContextV
         target=AgentTarget(alternative_manager),
     )
 
-def compile_renewable_section(section_content: str, context_variables: ContextVariables) -> ReplyResult:
+
+def compile_renewable_section(
+    section_content: str, context_variables: ContextVariables
+) -> ReplyResult:
     """Compile the renewable energy section (solar and wind) for the final report"""
     context_variables["report_sections"]["renewable"] = section_content
 
     # Check if all managers have submitted their sections
-    if all(key in context_variables["report_sections"] for key in ["renewable", "storage", "alternative"]):
+    if all(
+        key in context_variables["report_sections"]
+        for key in ["renewable", "storage", "alternative"]
+    ):
         context_variables["executive_review_ready"] = True
         return ReplyResult(
             message="Renewable energy section compiled. All sections are now ready for executive review.",
@@ -225,12 +296,18 @@ def compile_renewable_section(section_content: str, context_variables: ContextVa
             target=AgentTarget(executive_agent),
         )
 
-def compile_storage_section(section_content: str, context_variables: ContextVariables) -> ReplyResult:
+
+def compile_storage_section(
+    section_content: str, context_variables: ContextVariables
+) -> ReplyResult:
     """Compile the energy storage section (hydro and geothermal) for the final report"""
     context_variables["report_sections"]["storage"] = section_content
 
     # Check if all managers have submitted their sections
-    if all(key in context_variables["report_sections"] for key in ["renewable", "storage", "alternative"]):
+    if all(
+        key in context_variables["report_sections"]
+        for key in ["renewable", "storage", "alternative"]
+    ):
         context_variables["executive_review_ready"] = True
         return ReplyResult(
             message="Energy storage section compiled. All sections are now ready for executive review.",
@@ -244,12 +321,18 @@ def compile_storage_section(section_content: str, context_variables: ContextVari
             target=AgentTarget(executive_agent),
         )
 
-def compile_alternative_section(section_content: str, context_variables: ContextVariables) -> ReplyResult:
+
+def compile_alternative_section(
+    section_content: str, context_variables: ContextVariables
+) -> ReplyResult:
     """Compile the alternative energy section (biofuels) for the final report"""
     context_variables["report_sections"]["alternative"] = section_content
 
     # Check if all managers have submitted their sections
-    if all(key in context_variables["report_sections"] for key in ["renewable", "storage", "alternative"]):
+    if all(
+        key in context_variables["report_sections"]
+        for key in ["renewable", "storage", "alternative"]
+    ):
         context_variables["executive_review_ready"] = True
         return ReplyResult(
             message="Alternative energy section compiled. All sections are now ready for executive review.",
@@ -263,16 +346,20 @@ def compile_alternative_section(section_content: str, context_variables: Context
             target=AgentTarget(executive_agent),
         )
 
+
 def initiate_research(context_variables: ContextVariables) -> ReplyResult:
     """Initiate the research process by delegating to managers"""
     context_variables["task_started"] = True
 
     return ReplyResult(
         message="Research initiated. Tasks have been delegated to the renewable energy manager, storage manager, and alternative energy manager.",
-        context_variables=context_variables
+        context_variables=context_variables,
     )
 
-def compile_final_report(report_content: str, context_variables: ContextVariables) -> ReplyResult:
+
+def compile_final_report(
+    report_content: str, context_variables: ContextVariables
+) -> ReplyResult:
     """Compile the final comprehensive report from all sections"""
     context_variables["final_report"] = report_content
     context_variables["task_completed"] = True
@@ -280,15 +367,16 @@ def compile_final_report(report_content: str, context_variables: ContextVariable
     return ReplyResult(
         message="Final report compiled successfully. The comprehensive renewable energy report is now complete.",
         context_variables=context_variables,
-        target=AgentTarget(user)  # Return to user with final report
+        target=AgentTarget(user),  # Return to user with final report
     )
+
 
 # Models
 
 gpt_4o_mini_llm_config: dict[str, Any] = {
     "model": "gpt-4o-mini",
     "api_type": "openai",
-    "api_key": get_waldiez_flow_model_api_key("gpt_4o_mini")
+    "api_key": get_hierarchical_pattern_model_api_key("gpt_4o_mini"),
 }
 
 # Agents
@@ -497,7 +585,9 @@ wind_specialist = ConversableAgent(
 alternative_manager.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(biofuel_specialist),
-        condition=ExpressionContextCondition(expression=ContextExpression("not(${specialist_c1_completed})")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("not(${specialist_c1_completed})")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${task_started} == True")
         ),
@@ -506,21 +596,23 @@ alternative_manager.handoffs.add_context_condition(
 alternative_manager.handoffs.add_llm_condition(
     condition=OnCondition(
         target=AgentTarget(executive_agent),
-        condition=StringLLMCondition(prompt="Return to the executive with the compiled alternative energy section"),
+        condition=StringLLMCondition(
+            prompt="Return to the executive with the compiled alternative energy section"
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${manager_c_completed} == True")
         ),
     )
 )
 
-biofuel_specialist.handoffs.set_after_work(
-    target=AgentTarget(alternative_manager)
-)
+biofuel_specialist.handoffs.set_after_work(target=AgentTarget(alternative_manager))
 
 executive_agent.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(renewable_manager),
-        condition=ExpressionContextCondition(expression=ContextExpression("not(${manager_a_completed})")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("not(${manager_a_completed})")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${task_started} == True")
         ),
@@ -529,7 +621,9 @@ executive_agent.handoffs.add_context_condition(
 executive_agent.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(storage_manager),
-        condition=ExpressionContextCondition(expression=ContextExpression("not(${manager_b_completed})")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("not(${manager_b_completed})")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${task_started} == True")
         ),
@@ -538,28 +632,26 @@ executive_agent.handoffs.add_context_condition(
 executive_agent.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(alternative_manager),
-        condition=ExpressionContextCondition(expression=ContextExpression("not(${manager_c_completed})")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("not(${manager_c_completed})")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${task_started} == True")
         ),
     )
 )
-executive_agent.handoffs.set_after_work(
-    target=RevertToUserTarget()
-)
+executive_agent.handoffs.set_after_work(target=RevertToUserTarget())
 
-geothermal_specialist.handoffs.set_after_work(
-    target=AgentTarget(renewable_manager)
-)
+geothermal_specialist.handoffs.set_after_work(target=AgentTarget(renewable_manager))
 
-hydro_specialist.handoffs.set_after_work(
-    target=AgentTarget(storage_manager)
-)
+hydro_specialist.handoffs.set_after_work(target=AgentTarget(storage_manager))
 
 renewable_manager.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(solar_specialist),
-        condition=ExpressionContextCondition(expression=ContextExpression("not(${specialist_a1_completed})")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("not(${specialist_a1_completed})")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${task_started} == True")
         ),
@@ -568,7 +660,9 @@ renewable_manager.handoffs.add_context_condition(
 renewable_manager.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(wind_specialist),
-        condition=ExpressionContextCondition(expression=ContextExpression("not(${specialist_a2_completed})")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("not(${specialist_a2_completed})")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${task_started} == True")
         ),
@@ -577,24 +671,24 @@ renewable_manager.handoffs.add_context_condition(
 renewable_manager.handoffs.add_llm_condition(
     condition=OnCondition(
         target=AgentTarget(executive_agent),
-        condition=StringLLMCondition(prompt="Return to the executive after your report has been compiled."),
+        condition=StringLLMCondition(
+            prompt="Return to the executive after your report has been compiled."
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${manager_a_completed} == True")
         ),
     )
 )
-renewable_manager.handoffs.set_after_work(
-    target=AgentTarget(executive_agent)
-)
+renewable_manager.handoffs.set_after_work(target=AgentTarget(executive_agent))
 
-solar_specialist.handoffs.set_after_work(
-    target=AgentTarget(renewable_manager)
-)
+solar_specialist.handoffs.set_after_work(target=AgentTarget(renewable_manager))
 
 storage_manager.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(hydro_specialist),
-        condition=ExpressionContextCondition(expression=ContextExpression("not(${specialist_b1_completed})")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("not(${specialist_b1_completed})")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${task_started} == True")
         ),
@@ -603,7 +697,9 @@ storage_manager.handoffs.add_context_condition(
 storage_manager.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(geothermal_specialist),
-        condition=ExpressionContextCondition(expression=ContextExpression("not(${specialist_b2_completed})")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("not(${specialist_b2_completed})")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${task_started} == True")
         ),
@@ -612,49 +708,58 @@ storage_manager.handoffs.add_context_condition(
 storage_manager.handoffs.add_llm_condition(
     condition=OnCondition(
         target=AgentTarget(executive_agent),
-        condition=StringLLMCondition(prompt="Return to the executive after your report has been compiled."),
+        condition=StringLLMCondition(
+            prompt="Return to the executive after your report has been compiled."
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("${manager_b_completed} == True")
         ),
     )
 )
-storage_manager.handoffs.set_after_work(
-    target=AgentTarget(executive_agent)
-)
+storage_manager.handoffs.set_after_work(target=AgentTarget(executive_agent))
 
-wind_specialist.handoffs.set_after_work(
-    target=AgentTarget(renewable_manager)
-)
+wind_specialist.handoffs.set_after_work(target=AgentTarget(renewable_manager))
 
 manager_pattern = DefaultPattern(
     initial_agent=executive_agent,
-    agents=[solar_specialist, wind_specialist, hydro_specialist, geothermal_specialist, biofuel_specialist, renewable_manager, storage_manager, alternative_manager, executive_agent],
+    agents=[
+        solar_specialist,
+        wind_specialist,
+        hydro_specialist,
+        geothermal_specialist,
+        biofuel_specialist,
+        renewable_manager,
+        storage_manager,
+        alternative_manager,
+        executive_agent,
+    ],
     user_agent=user,
-    group_manager_args={
-        "llm_config": False
-    },
-    context_variables=ContextVariables(data={
-        "task_started": False,
-        "task_completed": False,
-        "executive_review_ready": False,
-        "manager_a_completed": False,
-        "manager_b_completed": False,
-        "manager_c_completed": False,
-        "specialist_a1_completed": False,
-        "specialist_a2_completed": False,
-        "specialist_b1_completed": False,
-        "specialist_c1_completed": False,
-        "specialist_b2_completed": False,
-        "solar_research": "",
-        "wind_research": "",
-        "hydro_research": "",
-        "geothermal_research": "",
-        "biofuel_research": "",
-        "report_sections": {},
-        "final_report": "",
-    }),
+    group_manager_args={"llm_config": False},
+    context_variables=ContextVariables(
+        data={
+            "task_started": False,
+            "task_completed": False,
+            "executive_review_ready": False,
+            "manager_a_completed": False,
+            "manager_b_completed": False,
+            "manager_c_completed": False,
+            "specialist_a1_completed": False,
+            "specialist_a2_completed": False,
+            "specialist_b1_completed": False,
+            "specialist_c1_completed": False,
+            "specialist_b2_completed": False,
+            "solar_research": "",
+            "wind_research": "",
+            "hydro_research": "",
+            "geothermal_research": "",
+            "biofuel_research": "",
+            "report_sections": {},
+            "final_report": "",
+        }
+    ),
     group_after_work=TerminateTarget(),
 )
+
 
 def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     """Convert a sqlite table to csv and json files.
@@ -687,6 +792,7 @@ def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     with open(json_file, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
+
 def stop_logging() -> None:
     """Stop logging."""
     runtime_logging.stop()
@@ -705,10 +811,12 @@ def stop_logging() -> None:
         get_sqlite_out("flow.db", table, dest)
 
 
-
 # Start chatting
 
-def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> list[dict[str, Any]]:
+
+def main(
+    on_event: Optional[Callable[[BaseEvent], bool]] = None,
+) -> list[dict[str, Any]]:
     """Start chatting.
 
     Returns
@@ -738,9 +846,7 @@ def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> list[dict[st
                         should_continue = on_event(event)
                     except BaseException as e:
                         print(f"Error in event handler: {e}")
-                        raise SystemExit(
-                            "Error in event handler: " + str(e)
-                        ) from e
+                        raise SystemExit("Error in event handler: " + str(e)) from e
                     if event.type == "run_completion":
                         break
                     if not should_continue:
@@ -749,8 +855,16 @@ def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> list[dict[st
                     "index": index,
                     "messages": result.messages,
                     "summary": result.summary,
-                    "cost": result.cost.model_dump(mode="json", fallback=str) if result.cost else None,
-                    "context_variables": result.context_variables.model_dump(mode="json", fallback=str) if result.context_variables else None,
+                    "cost": (
+                        result.cost.model_dump(mode="json", fallback=str)
+                        if result.cost
+                        else None
+                    ),
+                    "context_variables": (
+                        result.context_variables.model_dump(mode="json", fallback=str)
+                        if result.context_variables
+                        else None
+                    ),
                     "last_speaker": result.last_speaker,
                     "uuid": str(result.uuid),
                 }
@@ -764,8 +878,16 @@ def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> list[dict[st
                     "index": index,
                     "messages": result.messages,
                     "summary": result.summary,
-                    "cost": result.cost.model_dump(mode="json", fallback=str) if result.cost else None,
-                    "context_variables": result.context_variables.model_dump(mode="json", fallback=str) if result.context_variables else None,
+                    "cost": (
+                        result.cost.model_dump(mode="json", fallback=str)
+                        if result.cost
+                        else None
+                    ),
+                    "context_variables": (
+                        result.context_variables.model_dump(mode="json", fallback=str)
+                        if result.context_variables
+                        else None
+                    ),
                     "last_speaker": result.last_speaker,
                     "uuid": str(result.uuid),
                 }
@@ -779,6 +901,7 @@ def call_main() -> None:
     """Run the main function and print the results."""
     results: list[dict[str, Any]] = main()
     print(json.dumps(results, indent=2, ensure_ascii=False))
+
 
 if __name__ == "__main__":
     # Let's go!

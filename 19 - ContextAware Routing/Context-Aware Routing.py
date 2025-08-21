@@ -13,12 +13,13 @@
 # pyright: reportUnknownMemberType=false,reportUnknownLambdaType=false,reportUnnecessaryIsInstance=false
 # pyright: reportUnknownVariableType=false
 
-"""Waldiez Flow.
+"""Context-Aware Routing.
 
-A waldiez flow
+A waldiez implementation of AG2 example: https://docs.ag2.ai/latest/docs/user-guide/advanced-concepts/pattern-cookbook/context_aware_routing/
+The Context-Aware Routing Pattern creates a dynamic workflow where tasks are intelligently distributed to specialized agents based on content analysis rather than predetermined paths. Unlike static patterns with fixed routes, this approach analyzes each request in real-time to determine the most appropriate specialist, ensuring queries are handled by agents with the most relevant expertise while maintaining conversation continuity even as topics shift across domains.
 
-Requirements: ag2[openai]==0.9.8.post1
-Tags: 
+Requirements: ag2[openai]==0.9.9
+Tags:
 🧩 generated with ❤️ by Waldiez.
 """
 
@@ -34,18 +35,52 @@ import sys
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
-from typing import Annotated, Any, Callable, Coroutine, Dict, List, Optional, Set, Tuple, Union
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    Coroutine,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 import autogen  # type: ignore
-from autogen import Agent, Cache, ChatResult, ConversableAgent, GroupChat, UserProxyAgent, register_function, runtime_logging
+from autogen import (
+    Agent,
+    Cache,
+    ChatResult,
+    ConversableAgent,
+    GroupChat,
+    UserProxyAgent,
+    register_function,
+    runtime_logging,
+)
 from autogen.agentchat import GroupChatManager, run_group_chat
-from autogen.agentchat.group import AgentTarget, ContextExpression, ContextVariables, ExpressionAvailableCondition, ExpressionContextCondition, OnContextCondition, ReplyResult, RevertToUserTarget
+from autogen.agentchat.group import (
+    AgentTarget,
+    ContextExpression,
+    ContextVariables,
+    ExpressionAvailableCondition,
+    ExpressionContextCondition,
+    OnContextCondition,
+    ReplyResult,
+    RevertToUserTarget,
+)
 from autogen.agentchat.group.patterns import DefaultPattern
-from autogen.agentchat.group.targets.transition_target import AgentNameTarget, AgentTarget, RevertToUserTarget
+from autogen.agentchat.group.targets.transition_target import (
+    AgentNameTarget,
+    AgentTarget,
+    RevertToUserTarget,
+)
 from autogen.events import BaseEvent
 from autogen.io.run_response import AsyncRunResponseProtocol, RunResponseProtocol
 import numpy as np
 from dotenv import load_dotenv
+
 # Common environment variable setup for Waldiez flows
 load_dotenv(override=True)
 os.environ["AUTOGEN_USE_DOCKER"] = "0"
@@ -72,9 +107,11 @@ if not hasattr(np, "_no_pep50_warning"):
             Nothing.
         """
         yield
+
     setattr(np, "_no_pep50_warning", _np_no_nep50_warning)  # noqa
 
 # Start logging.
+
 
 def start_logging() -> None:
     """Start logging."""
@@ -89,7 +126,7 @@ start_logging()
 # Load model API keys
 # NOTE:
 # This section assumes that a file named:
-# "waldiez_flow_api_keys.py"
+# "context_aware_routin_api_keys.py"
 # exists in the same directory as this file.
 # This file contains the API keys for the models used in this flow.
 # It should be .gitignored and not shared publicly.
@@ -115,10 +152,11 @@ def load_api_key_module(flow_name: str) -> ModuleType:
         return importlib.reload(sys.modules[module_name])
     return importlib.import_module(module_name)
 
-__MODELS_MODULE__ = load_api_key_module("waldiez_flow")
+
+__MODELS_MODULE__ = load_api_key_module("context_aware_routin")
 
 
-def get_waldiez_flow_model_api_key(model_name: str) -> str:
+def get_context_aware_routin_model_api_key(model_name: str) -> str:
     """Get the model api key.
     Parameters
     ----------
@@ -130,14 +168,15 @@ def get_waldiez_flow_model_api_key(model_name: str) -> str:
     str
         The model api key.
     """
-    return __MODELS_MODULE__.get_waldiez_flow_model_api_key(model_name)
+    return __MODELS_MODULE__.get_context_aware_routin_model_api_key(model_name)
 
 
 # Tools
 
+
 def analyze_request(
     request: Annotated[str, "The user request text to analyze"],
-    context_variables: ContextVariables
+    context_variables: ContextVariables,
 ) -> ReplyResult:
     """
     Analyze a user request to determine routing based on content
@@ -164,13 +203,14 @@ def analyze_request(
 
     return ReplyResult(
         message=f"Request analyzed. Will determine the best specialist to handle: '{request}'",
-        context_variables=context_variables
+        context_variables=context_variables,
     )
+
 
 def route_to_tech_specialist(
     confidence: Annotated[int, "Confidence level for tech domain (1-10)"],
     reasoning: Annotated[str, "Reasoning for routing to tech specialist"],
-    context_variables: ContextVariables
+    context_variables: ContextVariables,
 ) -> ReplyResult:
     """
     Route the current request to the technology specialist
@@ -182,13 +222,14 @@ def route_to_tech_specialist(
     return ReplyResult(
         target=AgentTarget(agent=tech_specialist),
         message=f"Routing to tech specialist with confidence {confidence}/10. Reasoning: {reasoning}",
-        context_variables=context_variables
+        context_variables=context_variables,
     )
+
 
 def route_to_finance_specialist(
     confidence: Annotated[int, "Confidence level for finance domain (1-10)"],
     reasoning: Annotated[str, "Reasoning for routing to finance specialist"],
-    context_variables: ContextVariables
+    context_variables: ContextVariables,
 ) -> ReplyResult:
     """
     Route the current request to the finance specialist
@@ -198,15 +239,17 @@ def route_to_finance_specialist(
     context_variables["finance_invocations"] += 1
 
     return ReplyResult(
-        #target=AgentTarget(finance_specialist),
+        # target=AgentTarget(finance_specialist),
         target=AgentNameTarget(agent_name="finance_specialist"),
         message=f"Routing to finance specialist with confidence {confidence}/10. Reasoning: {reasoning}",
-        context_variables=context_variables)
+        context_variables=context_variables,
+    )
+
 
 def route_to_healthcare_specialist(
     confidence: Annotated[int, "Confidence level for healthcare domain (1-10)"],
     reasoning: Annotated[str, "Reasoning for routing to healthcare specialist"],
-    context_variables: ContextVariables
+    context_variables: ContextVariables,
 ) -> ReplyResult:
     """
     Route the current request to the healthcare specialist
@@ -218,13 +261,14 @@ def route_to_healthcare_specialist(
     return ReplyResult(
         target=AgentTarget(agent=healthcare_specialist),
         message=f"Routing to healthcare specialist with confidence {confidence}/10. Reasoning: {reasoning}",
-        context_variables=context_variables
+        context_variables=context_variables,
     )
+
 
 def route_to_general_specialist(
     confidence: Annotated[int, "Confidence level for general domain (1-10)"],
     reasoning: Annotated[str, "Reasoning for routing to general knowledge specialist"],
-    context_variables: ContextVariables
+    context_variables: ContextVariables,
 ) -> ReplyResult:
     """
     Route the current request to the general knowledge specialist
@@ -236,93 +280,106 @@ def route_to_general_specialist(
     return ReplyResult(
         target=AgentTarget(agent=general_specialist),
         message=f"Routing to general knowledge specialist with confidence {confidence}/10. Reasoning: {reasoning}",
-        context_variables=context_variables
+        context_variables=context_variables,
     )
+
 
 def provide_tech_response(
     response: Annotated[str, "The specialist's response to the request"],
-    context_variables: ContextVariables
+    context_variables: ContextVariables,
 ) -> ReplyResult:
     """
     Submit a response from the technology specialist
     """
     # Record the question and response
-    context_variables["question_responses"].append({
-        "domain": "technology",
-        "question": context_variables["current_request"],
-        "response": response
-    })
+    context_variables["question_responses"].append(
+        {
+            "domain": "technology",
+            "question": context_variables["current_request"],
+            "response": response,
+        }
+    )
     context_variables["question_answered"] = True
 
     return ReplyResult(
         message="Technology specialist response provided.",
-        context_variables=context_variables
+        context_variables=context_variables,
     )
+
 
 def provide_finance_response(
     response: Annotated[str, "The specialist's response to the request"],
-    context_variables: ContextVariables
+    context_variables: ContextVariables,
 ) -> ReplyResult:
     """
     Submit a response from the finance specialist
     """
     # Record the question and response
-    context_variables["question_responses"].append({
-        "domain": "finance",
-        "question": context_variables["current_request"],
-        "response": response
-    })
+    context_variables["question_responses"].append(
+        {
+            "domain": "finance",
+            "question": context_variables["current_request"],
+            "response": response,
+        }
+    )
     context_variables["question_answered"] = True
 
     return ReplyResult(
         message="Finance specialist response provided.",
-        context_variables=context_variables
+        context_variables=context_variables,
     )
+
 
 def provide_healthcare_response(
     response: Annotated[str, "The specialist's response to the request"],
-    context_variables: ContextVariables
+    context_variables: ContextVariables,
 ) -> ReplyResult:
     """
     Submit a response from the healthcare specialist
     """
     # Record the question and response
-    context_variables["question_responses"].append({
-        "domain": "healthcare",
-        "question": context_variables["current_request"],
-        "response": response
-    })
+    context_variables["question_responses"].append(
+        {
+            "domain": "healthcare",
+            "question": context_variables["current_request"],
+            "response": response,
+        }
+    )
     context_variables["question_answered"] = True
 
     return ReplyResult(
         message="Healthcare specialist response provided.",
-        context_variables=context_variables
+        context_variables=context_variables,
     )
+
 
 def provide_general_response(
     response: Annotated[str, "The specialist's response to the request"],
-    context_variables: ContextVariables
+    context_variables: ContextVariables,
 ) -> ReplyResult:
     """
     Submit a response from the general knowledge specialist
     """
     # Record the question and response
-    context_variables["question_responses"].append({
-        "domain": "general",
-        "question": context_variables["current_request"],
-        "response": response
-    })
+    context_variables["question_responses"].append(
+        {
+            "domain": "general",
+            "question": context_variables["current_request"],
+            "response": response,
+        }
+    )
     context_variables["question_answered"] = True
 
     return ReplyResult(
         message="General knowledge specialist response provided.",
-        context_variables=context_variables
+        context_variables=context_variables,
     )
+
 
 # Function for follow-up clarification if needed
 def request_clarification(
     clarification_question: Annotated[str, "Question to ask user for clarification"],
-    context_variables: ContextVariables
+    context_variables: ContextVariables,
 ) -> ReplyResult:
     """
     Request clarification from the user when the query is ambiguous
@@ -330,15 +387,16 @@ def request_clarification(
     return ReplyResult(
         message=f"Further clarification is required to determine the correct domain: {clarification_question}",
         context_variables=context_variables,
-        target=RevertToUserTarget()
+        target=RevertToUserTarget(),
     )
+
 
 # Models
 
 gpt_4_1_mini_llm_config: dict[str, Any] = {
     "model": "gpt-4.1-mini",
     "api_type": "openai",
-    "api_key": get_waldiez_flow_model_api_key("gpt_4_1_mini")
+    "api_key": get_context_aware_routin_model_api_key("gpt_4_1_mini"),
 }
 
 # Agents
@@ -464,22 +522,18 @@ user = UserProxyAgent(
     llm_config=False,  # pyright: ignore
 )
 
-finance_specialist.handoffs.set_after_work(
-    target=AgentTarget(router_agent)
-)
+finance_specialist.handoffs.set_after_work(target=AgentTarget(router_agent))
 
-general_specialist.handoffs.set_after_work(
-    target=AgentTarget(router_agent)
-)
+general_specialist.handoffs.set_after_work(target=AgentTarget(router_agent))
 
-healthcare_specialist.handoffs.set_after_work(
-    target=AgentTarget(router_agent)
-)
+healthcare_specialist.handoffs.set_after_work(target=AgentTarget(router_agent))
 
 router_agent.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(tech_specialist),
-        condition=ExpressionContextCondition(expression=ContextExpression("${current_domain} == 'technology'")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("${current_domain} == 'technology'")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("!${question_answered}")
         ),
@@ -488,7 +542,9 @@ router_agent.handoffs.add_context_condition(
 router_agent.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(finance_specialist),
-        condition=ExpressionContextCondition(expression=ContextExpression("${current_domain} == 'finance'")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("${current_domain} == 'finance'")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("!${question_answered}")
         ),
@@ -497,7 +553,9 @@ router_agent.handoffs.add_context_condition(
 router_agent.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(healthcare_specialist),
-        condition=ExpressionContextCondition(expression=ContextExpression("${current_domain} == 'healthcare'")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("${current_domain} == 'healthcare'")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("!${question_answered}")
         ),
@@ -506,45 +564,50 @@ router_agent.handoffs.add_context_condition(
 router_agent.handoffs.add_context_condition(
     condition=OnContextCondition(
         target=AgentTarget(general_specialist),
-        condition=ExpressionContextCondition(expression=ContextExpression("${current_domain} == 'general'")),
+        condition=ExpressionContextCondition(
+            expression=ContextExpression("${current_domain} == 'general'")
+        ),
         available=ExpressionAvailableCondition(
             expression=ContextExpression("!${question_answered}")
         ),
     )
 )
-router_agent.handoffs.set_after_work(
-    target=RevertToUserTarget()
-)
+router_agent.handoffs.set_after_work(target=RevertToUserTarget())
 
-tech_specialist.handoffs.set_after_work(
-    target=AgentTarget(router_agent)
-)
+tech_specialist.handoffs.set_after_work(target=AgentTarget(router_agent))
 
 manager_pattern = DefaultPattern(
     initial_agent=router_agent,
-    agents=[router_agent, tech_specialist, finance_specialist, healthcare_specialist, general_specialist],
+    agents=[
+        router_agent,
+        tech_specialist,
+        finance_specialist,
+        healthcare_specialist,
+        general_specialist,
+    ],
     user_agent=user,
-    group_manager_args={
-        "llm_config": False
-    },
-    context_variables=ContextVariables(data={
-        "routing_started": False,
-        "current_domain": None,
-        "previous_domains": [],
-        "domain_confidence": {},
-        "request_count": 0,
-        "current_request": "",
-        "domain_history": {},
-        "question_responses": [],
-        "question_answered": True,
-        "tech_invocations": 0,
-        "finance_invocations": 0,
-        "healthcare_invocations": 0,
-        "general_invocations": 0,
-        "has_error": False,
-        "error_message": "",
-    }),
+    group_manager_args={"llm_config": False},
+    context_variables=ContextVariables(
+        data={
+            "routing_started": False,
+            "current_domain": None,
+            "previous_domains": [],
+            "domain_confidence": {},
+            "request_count": 0,
+            "current_request": "",
+            "domain_history": {},
+            "question_responses": [],
+            "question_answered": True,
+            "tech_invocations": 0,
+            "finance_invocations": 0,
+            "healthcare_invocations": 0,
+            "general_invocations": 0,
+            "has_error": False,
+            "error_message": "",
+        }
+    ),
 )
+
 
 def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     """Convert a sqlite table to csv and json files.
@@ -577,6 +640,7 @@ def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
     with open(json_file, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
+
 def stop_logging() -> None:
     """Stop logging."""
     runtime_logging.stop()
@@ -595,10 +659,12 @@ def stop_logging() -> None:
         get_sqlite_out("flow.db", table, dest)
 
 
-
 # Start chatting
 
-def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> list[dict[str, Any]]:
+
+def main(
+    on_event: Optional[Callable[[BaseEvent], bool]] = None,
+) -> list[dict[str, Any]]:
     """Start chatting.
 
     Returns
@@ -628,9 +694,7 @@ def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> list[dict[st
                         should_continue = on_event(event)
                     except BaseException as e:
                         print(f"Error in event handler: {e}")
-                        raise SystemExit(
-                            "Error in event handler: " + str(e)
-                        ) from e
+                        raise SystemExit("Error in event handler: " + str(e)) from e
                     if event.type == "run_completion":
                         break
                     if not should_continue:
@@ -639,8 +703,16 @@ def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> list[dict[st
                     "index": index,
                     "messages": result.messages,
                     "summary": result.summary,
-                    "cost": result.cost.model_dump(mode="json", fallback=str) if result.cost else None,
-                    "context_variables": result.context_variables.model_dump(mode="json", fallback=str) if result.context_variables else None,
+                    "cost": (
+                        result.cost.model_dump(mode="json", fallback=str)
+                        if result.cost
+                        else None
+                    ),
+                    "context_variables": (
+                        result.context_variables.model_dump(mode="json", fallback=str)
+                        if result.context_variables
+                        else None
+                    ),
                     "last_speaker": result.last_speaker,
                     "uuid": str(result.uuid),
                 }
@@ -654,8 +726,16 @@ def main(on_event: Optional[Callable[[BaseEvent], bool]] = None) -> list[dict[st
                     "index": index,
                     "messages": result.messages,
                     "summary": result.summary,
-                    "cost": result.cost.model_dump(mode="json", fallback=str) if result.cost else None,
-                    "context_variables": result.context_variables.model_dump(mode="json", fallback=str) if result.context_variables else None,
+                    "cost": (
+                        result.cost.model_dump(mode="json", fallback=str)
+                        if result.cost
+                        else None
+                    ),
+                    "context_variables": (
+                        result.context_variables.model_dump(mode="json", fallback=str)
+                        if result.context_variables
+                        else None
+                    ),
                     "last_speaker": result.last_speaker,
                     "uuid": str(result.uuid),
                 }
@@ -669,6 +749,7 @@ def call_main() -> None:
     """Run the main function and print the results."""
     results: list[dict[str, Any]] = main()
     print(json.dumps(results, indent=2, ensure_ascii=False))
+
 
 if __name__ == "__main__":
     # Let's go!
