@@ -395,7 +395,10 @@ manager_pattern = DefaultPattern(
     initial_agent=triage_agent,
     agents=[weather_agent, info_agent, triage_agent],
     user_agent=user,
-    group_manager_args={"llm_config": False},
+    group_manager_args={
+        "llm_config": False,
+        "name": "manager",
+    },
     context_variables=ContextVariables(
         data={
             "timestamp": None,

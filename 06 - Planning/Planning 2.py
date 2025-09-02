@@ -263,6 +263,7 @@ manager_pattern = AutoPattern(
             ],
             cache_seed=None,
         ),
+        "name": "manager",
     },
 )
 

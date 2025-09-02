@@ -551,6 +551,7 @@ manager_pattern = DefaultPattern(
             ],
             cache_seed=None,
         ),
+        "name": "manager",
     },
     context_variables=ContextVariables(
         data={

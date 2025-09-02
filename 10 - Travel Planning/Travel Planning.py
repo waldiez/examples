@@ -293,6 +293,7 @@ manager_pattern = RoundRobinPattern(
             ],
             cache_seed=None,
         ),
+        "name": "manager",
     },
 )
 

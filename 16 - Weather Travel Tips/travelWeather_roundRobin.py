@@ -276,7 +276,10 @@ manager_pattern = RoundRobinPattern(
     initial_agent=weather_agent,
     agents=[weather_agent, engineer_agent, executor, safety_agent],
     user_agent=user,
-    group_manager_args={"llm_config": False},
+    group_manager_args={
+        "llm_config": False,
+        "name": "manager",
+    },
 )
 
 

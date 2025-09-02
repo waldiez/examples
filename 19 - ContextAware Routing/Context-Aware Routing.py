@@ -586,7 +586,10 @@ manager_pattern = DefaultPattern(
         general_specialist,
     ],
     user_agent=user,
-    group_manager_args={"llm_config": False},
+    group_manager_args={
+        "llm_config": False,
+        "name": "manager",
+    },
     context_variables=ContextVariables(
         data={
             "routing_started": False,

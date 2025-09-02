@@ -734,7 +734,10 @@ manager_pattern = DefaultPattern(
         executive_agent,
     ],
     user_agent=user,
-    group_manager_args={"llm_config": False},
+    group_manager_args={
+        "llm_config": False,
+        "name": "manager",
+    },
     context_variables=ContextVariables(
         data={
             "task_started": False,
