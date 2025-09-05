@@ -25,6 +25,7 @@ Tags: AutoDefense, Jailbreak
 
 # Imports
 
+import asyncio
 import csv
 import importlib
 import json

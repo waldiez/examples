@@ -25,6 +25,7 @@ Tags: wikipedia
 
 # Imports
 
+import asyncio
 import csv
 import importlib
 import json
