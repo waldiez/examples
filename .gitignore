@@ -1,4 +1,6 @@
 *
+!.gitattributes
+!.editorconfig
 !*/
 !**/*.waldiez
 !**/*.waldiezTool
