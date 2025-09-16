@@ -358,7 +358,6 @@
           "content": "\n\"\"\"Replace this with your code.\n\nAdd any code here that will be placed at the top of the whole flow.\n\"\"\"\n\n# Example:\n# global variable\n# DATABASE = {\n#     \"users\": [\n#         {\"id\": 1, \"name\": \"Alice\"},\n#         {\"id\": 2, \"name\": \"Bob\"},\n#     ],\n#     \"posts\": [\n#         {\"id\": 1, \"title\": \"Hello, world!\", \"author_id\": 1},\n#         {\"id\": 2, \"title\": \"Another post\", \"author_id\": 2},\n#     ],\n# }\n#\n# Add your code below\nRAPID_API_KEY = os.environ[\"RAPID_API_KEY\"]\n",
           "toolType": "shared",
           "secrets": {
-            "gpt-4o": "REPLACE_ME",
             "RAPID_API_KEY": "REPLACE_ME"
           },
           "kwargs": {}
