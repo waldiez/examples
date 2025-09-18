@@ -18,7 +18,7 @@
 Standup comedians with user input.
 
 Requirements: ag2[openai]==0.9.9
-Tags: standup, commedy
+Tags: standup, comedy
 🧩 generated with ❤️ by Waldiez.
 """
 
@@ -274,19 +274,21 @@ def main(
         max_turns=3,
         clear_history=True,
     )
+    if not isinstance(results, list):
+        results = [results]  # pylint: disable=redefined-variable-type
     if on_event:
-        if not isinstance(results, list):
-            results = [results]  # pylint: disable=redefined-variable-type
         for index, result in enumerate(results):
             for event in result.events:
                 try:
                     should_continue = on_event(event)
                 except BaseException as e:
+                    stop_logging()
                     print(f"Error in event handler: {e}")
                     raise SystemExit("Error in event handler: " + str(e)) from e
                 if event.type == "run_completion":
                     break
                 if not should_continue:
+                    stop_logging()
                     raise SystemExit("Event handler stopped processing")
             result_dict = {
                 "index": index,
@@ -307,8 +309,6 @@ def main(
             }
             result_dicts.append(result_dict)
     else:
-        if not isinstance(results, list):
-            results = [results]  # pylint: disable=redefined-variable-type
         for index, result in enumerate(results):
             result.process()
             result_dict = {

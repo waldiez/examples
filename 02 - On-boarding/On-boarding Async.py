@@ -379,19 +379,21 @@ async def main(
             },
         ]
     )
+    if not isinstance(results, list):
+        results = [results]  # pylint: disable=redefined-variable-type
     if on_event:
-        if not isinstance(results, list):
-            results = [results]  # pylint: disable=redefined-variable-type
         for index, result in enumerate(results):
             async for event in result.events:
                 try:
                     should_continue = await on_event(event)
                 except BaseException as e:
+                    await stop_logging()
                     print(f"Error in event handler: {e}")
                     raise SystemExit("Error in event handler: " + str(e)) from e
                 if event.type == "run_completion":
                     break
                 if not should_continue:
+                    await stop_logging()
                     raise SystemExit("Event handler stopped processing")
             result_dict = {
                 "index": index,
@@ -414,8 +416,6 @@ async def main(
             }
             result_dicts.append(result_dict)
     else:
-        if not isinstance(results, list):
-            results = [results]  # pylint: disable=redefined-variable-type
         for index, result in enumerate(results):
             await result.process()
             result_dict = {
