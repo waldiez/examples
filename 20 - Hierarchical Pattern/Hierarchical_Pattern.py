@@ -18,7 +18,7 @@
 A waldiez flow for the AG2 example on hierarchical pattern: https://docs.ag2.ai/latest/docs/user-guide/advanced-concepts/pattern-cookbook/hierarchical/
 The Hierarchical, or Tree, Orchestration Pattern is a powerful approach to organizing multi-agent workflows, inspired by traditional organizational structures where work and information flow through a well-defined chain of command. This pattern creates a tree-structured arrangement of agents with clear levels of responsibility, specialization, and reporting relationships.
 
-Requirements: ag2[openai]==0.9.9
+Requirements: ag2[openai]==0.9.10
 Tags:
 🧩 generated with ❤️ by Waldiez.
 """
@@ -33,6 +33,7 @@ import json
 import os
 import sqlite3
 import sys
+import traceback
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
@@ -793,7 +794,7 @@ def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
         csv_writer.writeheader()
         csv_writer.writerows(data)
     json_file = csv_file.replace(".csv", ".json")
-    with open(json_file, "w", encoding="utf-8") as file:
+    with open(json_file, "w", encoding="utf-8", newline="\n") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
 
@@ -815,11 +816,176 @@ def stop_logging() -> None:
         get_sqlite_out("flow.db", table, dest)
 
 
+def _check_for_extra_agents(agent: ConversableAgent) -> list[ConversableAgent]:
+    _extra_agents: list[ConversableAgent] = []
+    _agent_cls_name = agent.__class__.__name__
+    if _agent_cls_name == "CaptainAgent":
+        _assistant_agent = getattr(agent, "assistant", None)
+        if _assistant_agent and _assistant_agent not in _extra_agents:
+            _extra_agents.append(_assistant_agent)
+        _executor_agent = getattr(agent, "executor", None)
+        if _executor_agent and _executor_agent not in _extra_agents:
+            _extra_agents.append(_executor_agent)
+    return _extra_agents
+
+
+def _check_for_group_members(agent: ConversableAgent) -> list[ConversableAgent]:
+    _extra_agents: list[ConversableAgent] = []
+    _group_chat = getattr(agent, "_groupchat", None)
+    if _group_chat:
+        _chat_agents = getattr(_group_chat, "agents", [])
+        if isinstance(_chat_agents, list):
+            for _group_member in _chat_agents:
+                if _group_member not in _extra_agents:
+                    _extra_agents.append(_group_member)
+    _manager = getattr(agent, "_group_manager", None)
+    if _manager:
+        if _manager not in _extra_agents:
+            _extra_agents.append(_manager)
+        for _group_member in _check_for_group_members(_manager):
+            if _group_member not in _extra_agents:
+                _extra_agents.append(_group_member)
+    return _extra_agents
+
+
+def _get_known_agents() -> list[ConversableAgent]:
+    _known_agents: list[ConversableAgent] = []
+    if user not in _known_agents:
+        _known_agents.append(user)
+    _known_agents.append(user)
+    for _group_member in _check_for_group_members(user):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(user):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if solar_specialist not in _known_agents:
+        _known_agents.append(solar_specialist)
+    _known_agents.append(solar_specialist)
+    for _group_member in _check_for_group_members(solar_specialist):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(solar_specialist):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if wind_specialist not in _known_agents:
+        _known_agents.append(wind_specialist)
+    _known_agents.append(wind_specialist)
+    for _group_member in _check_for_group_members(wind_specialist):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(wind_specialist):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if hydro_specialist not in _known_agents:
+        _known_agents.append(hydro_specialist)
+    _known_agents.append(hydro_specialist)
+    for _group_member in _check_for_group_members(hydro_specialist):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(hydro_specialist):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if geothermal_specialist not in _known_agents:
+        _known_agents.append(geothermal_specialist)
+    _known_agents.append(geothermal_specialist)
+    for _group_member in _check_for_group_members(geothermal_specialist):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(geothermal_specialist):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if biofuel_specialist not in _known_agents:
+        _known_agents.append(biofuel_specialist)
+    _known_agents.append(biofuel_specialist)
+    for _group_member in _check_for_group_members(biofuel_specialist):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(biofuel_specialist):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if renewable_manager not in _known_agents:
+        _known_agents.append(renewable_manager)
+    _known_agents.append(renewable_manager)
+    for _group_member in _check_for_group_members(renewable_manager):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(renewable_manager):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if storage_manager not in _known_agents:
+        _known_agents.append(storage_manager)
+    _known_agents.append(storage_manager)
+    for _group_member in _check_for_group_members(storage_manager):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(storage_manager):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if alternative_manager not in _known_agents:
+        _known_agents.append(alternative_manager)
+    _known_agents.append(alternative_manager)
+    for _group_member in _check_for_group_members(alternative_manager):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(alternative_manager):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if executive_agent not in _known_agents:
+        _known_agents.append(executive_agent)
+    _known_agents.append(executive_agent)
+    for _group_member in _check_for_group_members(executive_agent):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(executive_agent):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+    return _known_agents
+
+
+def store_error(exc: BaseException | None = None) -> None:
+    """Store the error in error.json.
+
+    Parameters
+    ----------
+    exc : BaseException | None
+        The exception we got if any.
+    """
+    reason = "Event handler stopped processing" if not exc else traceback.format_exc()
+    try:
+        with open("error.json", "w", encoding="utf-8", newline="\n") as file:
+            file.write(json.dumps({"error": reason}))
+    except BaseException:  # pylint: disable=broad-exception-caught
+        pass
+
+
+def store_results(result_dicts: list[dict[str, Any]]) -> None:
+    """Store the results to results.json.
+    Parameters
+    ----------
+    result_dicts : list[dict[str, Any]]
+        The list of the results.
+    """
+    with open("results.json", "w", encoding="utf-8", newline="\n") as file:
+        file.write(json.dumps({"results": result_dicts}, indent=4, ensure_ascii=False))
+
+
 # Start chatting
 
 
 def main(
-    on_event: Optional[Callable[[BaseEvent], bool]] = None,
+    on_event: Optional[
+        Callable[[BaseEvent, Optional[list[ConversableAgent]]], bool]
+    ] = None,
 ) -> list[dict[str, Any]]:
     """Start chatting.
 
@@ -843,22 +1009,37 @@ def main(
         )
         if not isinstance(results, list):
             results = [results]  # pylint: disable=redefined-variable-type
+        got_agents = False
+        known_agents: list[ConversableAgent] = []
         if on_event:
             for index, result in enumerate(results):
+                result_events: list[dict[str, Any]] = []
                 for event in result.events:
                     try:
-                        should_continue = on_event(event)
+                        result_events.append(
+                            event.model_dump(mode="json", fallback=str)
+                        )
+                    except BaseException:  # pylint: disable=broad-exception-caught
+                        pass
+                    if not got_agents:
+                        known_agents = _get_known_agents()
+                        got_agents = True
+                    try:
+                        should_continue = on_event(event, known_agents)
                     except BaseException as e:
                         stop_logging()
-                        print(f"Error in event handler: {e}")
+                        store_error(e)
                         raise SystemExit("Error in event handler: " + str(e)) from e
                     if event.type == "run_completion":
                         break
                     if not should_continue:
                         stop_logging()
+                        store_error()
                         raise SystemExit("Event handler stopped processing")
                 result_dict = {
                     "index": index,
+                    "uuid": str(result.uuid),
+                    "events": result_events,
                     "messages": result.messages,
                     "summary": result.summary,
                     "cost": (
@@ -872,14 +1053,23 @@ def main(
                         else None
                     ),
                     "last_speaker": result.last_speaker,
-                    "uuid": str(result.uuid),
                 }
                 result_dicts.append(result_dict)
         else:
             for index, result in enumerate(results):
+                result_events: list[dict[str, Any]] = []
                 result.process()
+                for event in result.events:
+                    try:
+                        result_events.append(
+                            event.model_dump(mode="json", fallback=str)
+                        )
+                    except BaseException:  # pylint: disable=broad-exception-caught
+                        pass
                 result_dict = {
                     "index": index,
+                    "uuid": str(result.uuid),
+                    "events": result_events,
                     "messages": result.messages,
                     "summary": result.summary,
                     "cost": (
@@ -893,11 +1083,11 @@ def main(
                         else None
                     ),
                     "last_speaker": result.last_speaker,
-                    "uuid": str(result.uuid),
                 }
                 result_dicts.append(result_dict)
 
         stop_logging()
+    store_results(result_dicts)
     return result_dicts
 
 

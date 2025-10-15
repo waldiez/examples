@@ -17,7 +17,7 @@
 
 Async version of Sequential Chats and Customer Onboarding
 
-Requirements: ag2[anthropic]==0.9.9, ag2[openai]==0.9.9
+Requirements: ag2[anthropic]==0.9.10, ag2[openai]==0.9.10
 Tags: Sequential, Customer, On-boarding, Onboarding
 🧩 generated with ❤️ by Waldiez.
 """
@@ -32,6 +32,7 @@ import json
 import os
 import sqlite3
 import sys
+import traceback
 from dataclasses import asdict
 from pprint import pprint
 from types import ModuleType
@@ -297,7 +298,7 @@ async def get_sqlite_out(dbname: str, table: str, csv_file: str) -> None:
         await csv_writer.writeheader()
         await csv_writer.writerows(data)
     json_file = csv_file.replace(".csv", ".json")
-    async with aiofiles.open(json_file, "w", encoding="utf-8") as file:
+    async with aiofiles.open(json_file, "w", encoding="utf-8", newline="\n") as file:
         await file.write(json.dumps(data, indent=4, ensure_ascii=False))
 
 
@@ -319,11 +320,124 @@ async def stop_logging() -> None:
         await get_sqlite_out("flow.db", table, dest)
 
 
+def _check_for_extra_agents(agent: ConversableAgent) -> list[ConversableAgent]:
+    _extra_agents: list[ConversableAgent] = []
+    _agent_cls_name = agent.__class__.__name__
+    if _agent_cls_name == "CaptainAgent":
+        _assistant_agent = getattr(agent, "assistant", None)
+        if _assistant_agent and _assistant_agent not in _extra_agents:
+            _extra_agents.append(_assistant_agent)
+        _executor_agent = getattr(agent, "executor", None)
+        if _executor_agent and _executor_agent not in _extra_agents:
+            _extra_agents.append(_executor_agent)
+    return _extra_agents
+
+
+def _check_for_group_members(agent: ConversableAgent) -> list[ConversableAgent]:
+    _extra_agents: list[ConversableAgent] = []
+    _group_chat = getattr(agent, "_groupchat", None)
+    if _group_chat:
+        _chat_agents = getattr(_group_chat, "agents", [])
+        if isinstance(_chat_agents, list):
+            for _group_member in _chat_agents:
+                if _group_member not in _extra_agents:
+                    _extra_agents.append(_group_member)
+    _manager = getattr(agent, "_group_manager", None)
+    if _manager:
+        if _manager not in _extra_agents:
+            _extra_agents.append(_manager)
+        for _group_member in _check_for_group_members(_manager):
+            if _group_member not in _extra_agents:
+                _extra_agents.append(_group_member)
+    return _extra_agents
+
+
+def _get_known_agents() -> list[ConversableAgent]:
+    _known_agents: list[ConversableAgent] = []
+    if customer_proxy not in _known_agents:
+        _known_agents.append(customer_proxy)
+    _known_agents.append(customer_proxy)
+    for _group_member in _check_for_group_members(customer_proxy):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(customer_proxy):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if customer_engagement_agent not in _known_agents:
+        _known_agents.append(customer_engagement_agent)
+    _known_agents.append(customer_engagement_agent)
+    for _group_member in _check_for_group_members(customer_engagement_agent):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(customer_engagement_agent):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if topic_preference_agent not in _known_agents:
+        _known_agents.append(topic_preference_agent)
+    _known_agents.append(topic_preference_agent)
+    for _group_member in _check_for_group_members(topic_preference_agent):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(topic_preference_agent):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+
+    if personal_information_agent not in _known_agents:
+        _known_agents.append(personal_information_agent)
+    _known_agents.append(personal_information_agent)
+    for _group_member in _check_for_group_members(personal_information_agent):
+        if _group_member not in _known_agents:
+            _known_agents.append(_group_member)
+    for _extra_agent in _check_for_extra_agents(personal_information_agent):
+        if _extra_agent not in _known_agents:
+            _known_agents.append(_extra_agent)
+    return _known_agents
+
+
+async def store_error(exc: BaseException | None = None) -> None:
+    """Store the error in error.json.
+
+    Parameters
+    ----------
+    exc : BaseException | None
+        The exception we got if any.
+    """
+    reason = "Event handler stopped processing" if not exc else traceback.format_exc()
+    try:
+        async with aiofiles.open(
+            "error.json", "w", encoding="utf-8", newline="\n"
+        ) as file:
+            await file.write(json.dumps({"error": reason}))
+    except BaseException:  # pylint: disable=broad-exception-caught
+        pass
+
+
+async def store_results(result_dicts: list[dict[str, Any]]) -> None:
+    """Store the results to results.json.
+    Parameters
+    ----------
+    result_dicts : list[dict[str, Any]]
+        The list of the results.
+    """
+    async with aiofiles.open(
+        "results.json", "w", encoding="utf-8", newline="\n"
+    ) as file:
+        await file.write(
+            json.dumps({"results": result_dicts}, indent=4, ensure_ascii=False)
+        )
+
+
 # Start chatting
 
 
 async def main(
-    on_event: Optional[Callable[[BaseEvent], Coroutine[None, None, bool]]] = None,
+    on_event: Optional[
+        Callable[
+            [BaseEvent, Optional[list[ConversableAgent]]], Coroutine[None, None, bool]
+        ]
+    ] = None,
 ) -> list[dict[str, Any]]:
     """Start chatting.
 
@@ -381,22 +495,35 @@ async def main(
     )
     if not isinstance(results, list):
         results = [results]  # pylint: disable=redefined-variable-type
+    got_agents = False
+    known_agents: list[ConversableAgent] = []
     if on_event:
         for index, result in enumerate(results):
+            result_events: list[dict[str, Any]] = []
             async for event in result.events:
                 try:
-                    should_continue = await on_event(event)
+                    result_events.append(event.model_dump(mode="json", fallback=str))
+                except BaseException:  # pylint: disable=broad-exception-caught
+                    pass
+                if not got_agents:
+                    known_agents = _get_known_agents()
+                    got_agents = True
+                try:
+                    should_continue = await on_event(event, known_agents)
                 except BaseException as e:
                     await stop_logging()
-                    print(f"Error in event handler: {e}")
+                    store_error(e)
                     raise SystemExit("Error in event handler: " + str(e)) from e
                 if event.type == "run_completion":
                     break
                 if not should_continue:
                     await stop_logging()
+                    store_error()
                     raise SystemExit("Event handler stopped processing")
             result_dict = {
                 "index": index,
+                "uuid": str(result.uuid),
+                "events": result_events,
                 "messages": await result.messages,
                 "summary": await result.summary,
                 "cost": (
@@ -412,14 +539,21 @@ async def main(
                     else None
                 ),
                 "last_speaker": await result.last_speaker,
-                "uuid": str(result.uuid),
             }
             result_dicts.append(result_dict)
     else:
         for index, result in enumerate(results):
+            result_events: list[dict[str, Any]] = []
             await result.process()
+            async for event in result.events:
+                try:
+                    result_events.append(event.model_dump(mode="json", fallback=str))
+                except BaseException:  # pylint: disable=broad-exception-caught
+                    pass
             result_dict = {
                 "index": index,
+                "uuid": str(result.uuid),
+                "events": result_events,
                 "messages": await result.messages,
                 "summary": await result.summary,
                 "cost": (
@@ -435,11 +569,11 @@ async def main(
                     else None
                 ),
                 "last_speaker": await result.last_speaker,
-                "uuid": str(result.uuid),
             }
             result_dicts.append(result_dict)
 
     await stop_logging()
+    await store_results(result_dicts)
     return result_dicts
 
 
