@@ -3,15 +3,15 @@
 # Copyright (c) 2024 - 2025 Waldiez and contributors.
 # flake8: noqa: E501
 
-# pylint: disable=line-too-long,unknown-option-value,unused-argument,unused-import,unused-variable,invalid-name
-# pylint: disable=import-error,import-outside-toplevel,inconsistent-quotes,missing-function-docstring,missing-param-doc,missing-return-doc
-# pylint: disable=ungrouped-imports,unnecessary-lambda-assignment,too-many-arguments,too-many-locals,too-many-try-statements,broad-exception-caught
+# pylint: disable=broad-exception-caught,f-string-without-interpolation,invalid-name,import-error,import-outside-toplevel,inconsistent-quotes,line-too-long,missing-function-docstring
+# pylint: disable=missing-param-doc,missing-return-doc,no-member,pointless-string-statement,too-complex,too-many-arguments,too-many-locals,too-many-try-statements
+# pylint: disable=ungrouped-imports,unnecessary-lambda-assignment,unknown-option-value,unused-argument,unused-import,unused-variable
 
 # type: ignore
 
-# pyright: reportUnusedImport=false,reportMissingTypeStubs=false,reportUnknownArgumentType=false
-# pyright: reportUnknownMemberType=false,reportUnknownLambdaType=false,reportUnnecessaryIsInstance=false
-# pyright: reportUnknownVariableType=false
+# pyright: reportArgumentType=false,reportAttributeAccessIssue=false,reportCallInDefaultInitializer=false,reportDeprecated=false,reportDuplicateImport=false,reportMissingTypeStubs=false
+# pyright: reportOperatorIssue=false,reportOptionalMemberAccess=false,reportPossiblyUnboundVariable=false,reportUnreachable=false,reportUnusedImport=false,reportUnknownArgumentType=false
+# pyright: reportUnknownMemberType=false,reportUnknownLambdaType=false,reportUnnecessaryIsInstance=false,reportUnusedParameter=false,reportUnusedVariable=false,reportUnknownVariableType=false
 
 """1 - Simple.
 
@@ -187,7 +187,7 @@ captain = CaptainAgent(
     max_consecutive_auto_reply=None,
     default_auto_reply="",
     code_execution_config={"executor": captain_executor},
-    is_termination_msg=None,  # pyright: ignore
+    is_termination_msg=None,
     agent_config_save_path=os.getcwd(),
     nested_config={
         "autobuild_init_config": {
@@ -224,8 +224,8 @@ user_proxy = UserProxyAgent(
     max_consecutive_auto_reply=None,
     default_auto_reply="",
     code_execution_config=False,
-    is_termination_msg=None,  # pyright: ignore
-    llm_config=False,  # pyright: ignore
+    is_termination_msg=None,
+    llm_config=False,
 )
 
 
@@ -366,9 +366,7 @@ def store_results(result_dicts: list[dict[str, Any]]) -> None:
 
 
 def main(
-    on_event: Optional[
-        Callable[[BaseEvent, Optional[list[ConversableAgent]]], bool]
-    ] = None,
+    on_event: Callable[[BaseEvent, list[ConversableAgent]], bool] | None = None,
 ) -> list[dict[str, Any]]:
     """Start chatting.
 
@@ -395,9 +393,10 @@ def main(
         results = [results]  # pylint: disable=redefined-variable-type
     got_agents = False
     known_agents: list[ConversableAgent] = []
+    result_events: list[dict[str, Any]] = []
     if on_event:
         for index, result in enumerate(results):
-            result_events: list[dict[str, Any]] = []
+            result_events = []
             for event in result.events:
                 try:
                     result_events.append(event.model_dump(mode="json", fallback=str))
@@ -412,12 +411,14 @@ def main(
                     stop_logging()
                     store_error(e)
                     raise SystemExit("Error in event handler: " + str(e)) from e
-                if event.type == "run_completion":
+                if getattr(event, "type") == "run_completion":
                     break
                 if not should_continue:
                     stop_logging()
                     store_error()
                     raise SystemExit("Event handler stopped processing")
+            result_cost = result.cost
+            result_context_variables = result.context_variables
             result_dict = {
                 "index": index,
                 "uuid": str(result.uuid),
@@ -425,13 +426,13 @@ def main(
                 "messages": result.messages,
                 "summary": result.summary,
                 "cost": (
-                    result.cost.model_dump(mode="json", fallback=str)
-                    if result.cost
+                    result_cost.model_dump(mode="json", fallback=str)
+                    if result_cost
                     else None
                 ),
                 "context_variables": (
-                    result.context_variables.model_dump(mode="json", fallback=str)
-                    if result.context_variables
+                    result_context_variables.model_dump(mode="json", fallback=str)
+                    if result_context_variables
                     else None
                 ),
                 "last_speaker": result.last_speaker,
@@ -439,13 +440,15 @@ def main(
             result_dicts.append(result_dict)
     else:
         for index, result in enumerate(results):
-            result_events: list[dict[str, Any]] = []
+            result_events = []
             result.process()
             for event in result.events:
                 try:
                     result_events.append(event.model_dump(mode="json", fallback=str))
                 except BaseException:  # pylint: disable=broad-exception-caught
                     pass
+            result_cost = result.cost
+            result_context_variables = result.context_variables
             result_dict = {
                 "index": index,
                 "uuid": str(result.uuid),
@@ -453,13 +456,13 @@ def main(
                 "messages": result.messages,
                 "summary": result.summary,
                 "cost": (
-                    result.cost.model_dump(mode="json", fallback=str)
-                    if result.cost
+                    result_cost.model_dump(mode="json", fallback=str)
+                    if result_cost
                     else None
                 ),
                 "context_variables": (
-                    result.context_variables.model_dump(mode="json", fallback=str)
-                    if result.context_variables
+                    result_context_variables.model_dump(mode="json", fallback=str)
+                    if result_context_variables
                     else None
                 ),
                 "last_speaker": result.last_speaker,
